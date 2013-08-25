@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="MyClass">
+    <file>Resources/saveButtton.jpg</file>
+    <file>Resources/add-icon.png</file>
+    <file>Resources/Delete_icon.png</file>
+    <file>Resources/edit.jpg</file>
+    <file>Resources/createNew.jpg</file>
+    <file>Resources/openFile.jpg</file>
+    <file>Resources/save_icon.png</file>
+  </qresource>
+</RCC>
