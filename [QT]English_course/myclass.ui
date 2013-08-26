@@ -20,7 +20,7 @@
       <x>0</x>
       <y>0</y>
       <width>941</width>
-      <height>691</height>
+      <height>581</height>
      </rect>
     </property>
     <property name="toolTip">
@@ -76,13 +76,13 @@
      <attribute name="title">
       <string>Add course</string>
      </attribute>
-     <widget class="QGroupBox" name="classInsertgGroupBox">
+     <widget class="QGroupBox" name="classInsertGroupBox">
       <property name="geometry">
        <rect>
         <x>600</x>
         <y>10</y>
         <width>321</width>
-        <height>641</height>
+        <height>531</height>
        </rect>
       </property>
       <property name="toolTip">
@@ -91,6 +91,28 @@
       <property name="title">
        <string>Class inserted :</string>
       </property>
+      <widget class="QWidget" name="horizontalLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>20</y>
+         <width>261</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="step1Layout"/>
+      </widget>
+      <widget class="QWidget" name="horizontalLayoutWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>70</y>
+         <width>261</width>
+         <height>111</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="step2Layout"/>
+      </widget>
      </widget>
      <widget class="QWidget" name="step1Widget" native="true">
       <property name="geometry">
@@ -111,7 +133,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Step 1 :Course name (e.g: Ielts, Toefl,...)</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Step 1 :Course name (e.g: Ielts, Toefl,...)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLabel" name="setCourseLabel">
@@ -180,7 +202,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Step 2: Add skills</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Step 2: Add skills&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QListWidget" name="leftWidget">
@@ -281,17 +303,14 @@
         </size>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="addSkill">
        <property name="geometry">
         <rect>
-         <x>294</x>
+         <x>260</x>
          <y>0</y>
-         <width>41</width>
+         <width>75</width>
          <height>31</height>
         </rect>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add Skills&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string/>
@@ -299,6 +318,12 @@
        <property name="icon">
         <iconset resource="myclass.qrc">
          <normaloff>:/MyClass/Resources/add-icon.png</normaloff>:/MyClass/Resources/add-icon.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>18</width>
+         <height>18</height>
+        </size>
        </property>
       </widget>
      </widget>
@@ -308,7 +333,7 @@
         <x>70</x>
         <y>280</y>
         <width>381</width>
-        <height>371</height>
+        <height>271</height>
        </rect>
       </property>
       <widget class="QLabel" name="step2Label_2">
@@ -316,18 +341,18 @@
         <rect>
          <x>10</x>
          <y>10</y>
-         <width>211</width>
+         <width>131</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>Step 3: Add materials</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Step 3: Add materials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QPushButton" name="saveButton3">
        <property name="geometry">
         <rect>
-         <x>340</x>
+         <x>170</x>
          <y>0</y>
          <width>41</width>
          <height>31</height>
@@ -575,7 +600,7 @@
    <slot>step3SaveAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>449</x>
+     <x>279</x>
      <y>371</y>
     </hint>
     <hint type="destinationlabel">
@@ -680,6 +705,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>addSkill</sender>
+   <signal>clicked()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>addSkillAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>383</x>
+     <y>203</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>636</x>
+     <y>752</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openFileAction()</slot>
@@ -696,5 +737,6 @@
   <slot>all2LeftAction()</slot>
   <slot>left2RightClickAction()</slot>
   <slot>right2LeftClickAction()</slot>
+  <slot>addSkillAction()</slot>
  </slots>
 </ui>

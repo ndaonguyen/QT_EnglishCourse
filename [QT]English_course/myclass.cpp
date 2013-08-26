@@ -7,6 +7,7 @@ MyClass::MyClass(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags)
 {
 	ui.setupUi(this);
+	setupConnectMaterial(this);
 //	ui.step2Widget->setVisible(false);
 	conn = database::connectByC();
 	step1 = false;
