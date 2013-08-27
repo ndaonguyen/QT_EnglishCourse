@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>917</width>
-    <height>800</height>
+    <height>705</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -121,7 +121,7 @@
          <x>50</x>
          <y>100</y>
          <width>261</width>
-         <height>441</height>
+         <height>411</height>
         </rect>
        </property>
        <widget class="QWidget" name="verticalLayoutWidget_2">
@@ -130,11 +130,27 @@
           <x>0</x>
           <y>0</y>
           <width>261</width>
-          <height>431</height>
+          <height>411</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="step2Layout"/>
        </widget>
+      </widget>
+      <widget class="QPushButton" name="saveCourseButton">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>520</y>
+         <width>91</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="autoFillBackground">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Save Course</string>
+       </property>
       </widget>
      </widget>
      <widget class="QWidget" name="step1Widget" native="true">
@@ -370,29 +386,6 @@
        </property>
        <property name="text">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Step 3: Add materials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="saveButton3">
-       <property name="geometry">
-        <rect>
-         <x>340</x>
-         <y>0</y>
-         <width>41</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="myclass.qrc">
-         <normaloff>:/MyClass/Resources/saveButtton.jpg</normaloff>:/MyClass/Resources/saveButtton.jpg</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>18</width>
-         <height>18</height>
-        </size>
        </property>
       </widget>
      </widget>
@@ -638,23 +631,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>529</x>
-     <y>764</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>saveButton3</sender>
-   <signal>clicked()</signal>
-   <receiver>MyClassClass</receiver>
-   <slot>step3SaveAction()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>442</x>
-     <y>437</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>393</x>
-     <y>764</y>
+     <y>676</y>
     </hint>
    </hints>
   </connection>
@@ -670,7 +647,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>170</x>
-     <y>768</y>
+     <y>676</y>
     </hint>
    </hints>
   </connection>
@@ -686,7 +663,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>257</x>
-     <y>784</y>
+     <y>676</y>
     </hint>
    </hints>
   </connection>
@@ -702,7 +679,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>200</x>
-     <y>758</y>
+     <y>676</y>
     </hint>
    </hints>
   </connection>
@@ -718,7 +695,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>451</x>
-     <y>775</y>
+     <y>676</y>
     </hint>
    </hints>
   </connection>
@@ -734,7 +711,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>33</x>
-     <y>762</y>
+     <y>676</y>
     </hint>
    </hints>
   </connection>
@@ -750,7 +727,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>51</x>
-     <y>773</y>
+     <y>676</y>
     </hint>
    </hints>
   </connection>
@@ -766,7 +743,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>636</x>
-     <y>752</y>
+     <y>676</y>
     </hint>
    </hints>
   </connection>
@@ -783,6 +760,22 @@
     <hint type="destinationlabel">
      <x>502</x>
      <y>675</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>saveCourseButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>saveCourseAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>705</x>
+     <y>630</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>677</x>
+     <y>691</y>
     </hint>
    </hints>
   </connection>
@@ -803,5 +796,6 @@
   <slot>left2RightClickAction()</slot>
   <slot>right2LeftClickAction()</slot>
   <slot>addSkillAction()</slot>
+  <slot>saveCourseAction()</slot>
  </slots>
 </ui>

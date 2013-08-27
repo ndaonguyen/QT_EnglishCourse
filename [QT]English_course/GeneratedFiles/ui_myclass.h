@@ -57,6 +57,7 @@ public:
     QWidget *step2WidgetInfo;
     QWidget *verticalLayoutWidget_2;
     QVBoxLayout *step2Layout;
+    QPushButton *saveCourseButton;
     QWidget *step1Widget;
     QLabel *step1Label;
     QLabel *setCourseLabel;
@@ -74,7 +75,6 @@ public:
     QPushButton *addSkill;
     QWidget *step3Widget;
     QLabel *step2Label_2;
-    QPushButton *saveButton3;
     QFrame *line1_2;
     QFrame *line2_3;
     QMenuBar *menuBar;
@@ -85,7 +85,7 @@ public:
     {
         if (MyClassClass->objectName().isEmpty())
             MyClassClass->setObjectName(QString::fromUtf8("MyClassClass"));
-        MyClassClass->resize(917, 800);
+        MyClassClass->resize(917, 705);
         actionAdd_class = new QAction(MyClassClass);
         actionAdd_class->setObjectName(QString::fromUtf8("actionAdd_class"));
         actionList = new QAction(MyClassClass);
@@ -153,15 +153,19 @@ public:
         skillLabelShow->setGeometry(QRect(20, 70, 46, 13));
         step2WidgetInfo = new QWidget(classInsertGroupBox);
         step2WidgetInfo->setObjectName(QString::fromUtf8("step2WidgetInfo"));
-        step2WidgetInfo->setGeometry(QRect(50, 100, 261, 441));
+        step2WidgetInfo->setGeometry(QRect(50, 100, 261, 411));
         verticalLayoutWidget_2 = new QWidget(step2WidgetInfo);
         verticalLayoutWidget_2->setObjectName(QString::fromUtf8("verticalLayoutWidget_2"));
-        verticalLayoutWidget_2->setGeometry(QRect(0, 0, 261, 431));
+        verticalLayoutWidget_2->setGeometry(QRect(0, 0, 261, 411));
         step2Layout = new QVBoxLayout(verticalLayoutWidget_2);
         step2Layout->setSpacing(6);
         step2Layout->setContentsMargins(11, 11, 11, 11);
         step2Layout->setObjectName(QString::fromUtf8("step2Layout"));
         step2Layout->setContentsMargins(0, 0, 0, 0);
+        saveCourseButton = new QPushButton(classInsertGroupBox);
+        saveCourseButton->setObjectName(QString::fromUtf8("saveCourseButton"));
+        saveCourseButton->setGeometry(QRect(120, 520, 91, 23));
+        saveCourseButton->setAutoFillBackground(true);
         step1Widget = new QWidget(addCourseTab);
         step1Widget->setObjectName(QString::fromUtf8("step1Widget"));
         step1Widget->setGeometry(QRect(70, 20, 381, 81));
@@ -223,11 +227,6 @@ public:
         step2Label_2 = new QLabel(step3Widget);
         step2Label_2->setObjectName(QString::fromUtf8("step2Label_2"));
         step2Label_2->setGeometry(QRect(10, 10, 131, 16));
-        saveButton3 = new QPushButton(step3Widget);
-        saveButton3->setObjectName(QString::fromUtf8("saveButton3"));
-        saveButton3->setGeometry(QRect(340, 0, 41, 31));
-        saveButton3->setIcon(icon5);
-        saveButton3->setIconSize(QSize(18, 18));
         line1_2 = new QFrame(addCourseTab);
         line1_2->setObjectName(QString::fromUtf8("line1_2"));
         line1_2->setGeometry(QRect(70, 110, 381, 16));
@@ -268,7 +267,6 @@ public:
         QObject::connect(actionSave, SIGNAL(triggered()), MyClassClass, SLOT(saveAction()));
         QObject::connect(saveButton, SIGNAL(clicked()), MyClassClass, SLOT(step1SaveAction()));
         QObject::connect(saveButton2, SIGNAL(clicked()), MyClassClass, SLOT(step2SaveAction()));
-        QObject::connect(saveButton3, SIGNAL(clicked()), MyClassClass, SLOT(step3SaveAction()));
         QObject::connect(left2RightButton, SIGNAL(clicked()), MyClassClass, SLOT(left2RightAction()));
         QObject::connect(right2LeftButton, SIGNAL(clicked()), MyClassClass, SLOT(right2LeftAction()));
         QObject::connect(all2RightButton, SIGNAL(clicked()), MyClassClass, SLOT(all2RightAction()));
@@ -277,6 +275,7 @@ public:
         QObject::connect(rightWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), MyClassClass, SLOT(right2LeftClickAction()));
         QObject::connect(addSkill, SIGNAL(clicked()), MyClassClass, SLOT(addSkillAction()));
         QObject::connect(courseNameLineEdit, SIGNAL(returnPressed()), MyClassClass, SLOT(step1SaveAction()));
+        QObject::connect(saveCourseButton, SIGNAL(clicked()), MyClassClass, SLOT(saveCourseAction()));
 
         tabWidget->setCurrentIndex(2);
 
@@ -314,6 +313,7 @@ public:
 #endif // QT_NO_TOOLTIP
         classInsertGroupBox->setTitle(QApplication::translate("MyClassClass", "Info inserted :", 0, QApplication::UnicodeUTF8));
         skillLabelShow->setText(QApplication::translate("MyClassClass", "<html><head/><body><p><span style=\" font-weight:600;\">Skills:</span></p></body></html>", 0, QApplication::UnicodeUTF8));
+        saveCourseButton->setText(QApplication::translate("MyClassClass", "Save Course", 0, QApplication::UnicodeUTF8));
         step1Label->setText(QApplication::translate("MyClassClass", "<html><head/><body><p><span style=\" font-weight:600;\">Step 1 :Course name (e.g: Ielts, Toefl,...)</span></p></body></html>", 0, QApplication::UnicodeUTF8));
         setCourseLabel->setText(QApplication::translate("MyClassClass", "Set course name:", 0, QApplication::UnicodeUTF8));
         saveButton->setText(QString());
@@ -328,7 +328,6 @@ public:
         saveButton2->setText(QString());
         addSkill->setText(QString());
         step2Label_2->setText(QApplication::translate("MyClassClass", "<html><head/><body><p><span style=\" font-weight:600;\">Step 3: Add materials</span></p></body></html>", 0, QApplication::UnicodeUTF8));
-        saveButton3->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(addCourseTab), QApplication::translate("MyClassClass", "Add course", 0, QApplication::UnicodeUTF8));
         menuClass->setTitle(QApplication::translate("MyClassClass", "Class", 0, QApplication::UnicodeUTF8));
         toolBar->setWindowTitle(QApplication::translate("MyClassClass", "toolBar", 0, QApplication::UnicodeUTF8));

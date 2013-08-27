@@ -7,6 +7,7 @@
 #include <QListWidgetItem>
 #include <QInputDialog>
 #include <QSignalMapper>
+#include "listDialog.h"
 #include "ui_myclass.h"
 #include "database.h"
 
@@ -24,6 +25,7 @@ public:
 	bool step2;
 	bool step3;	
 public:
+	//  START :ADD COURSE TAB
 	void fillDataStep2()
 	{
 		// update info to ListWidget of step 2			
@@ -119,11 +121,50 @@ public:
 			skillWidgets.append(listSkill);
 		}
 	}
-	QString materialBox(QString skill,bool ok)
+	QString materialBox(QString skill,bool &ok)
 	{
 		QString text = QInputDialog::getText(this, tr("Add Material to ") + skill,tr("Material:"), QLineEdit::Normal, tr("try try"),&ok);
 		return text;
 	}
+
+	bool isAddMaterial(QString skillNId)
+	{
+	/**
+	**	@parameter: skillNID : "<skill>,<id>"
+	**/			
+		bool ok;
+		QStringList stringlist = skillNId.split(",");
+		QString skill = stringlist.at(0);
+		QString index = stringlist.at(1);
+		QString text =  materialBox(skill,ok);
+		int idMaterial = -1;
+		if (ok && !text.isEmpty())
+		{
+			int idMaterial = database::material_saveAction(conn,text);
+			if(idMaterial !=-1 )
+			{
+				//insert into skill_material table		
+				MYSQL_ROW row;
+				if(row = database::skill_searchName(conn,skill))
+				{
+					char* idSkill = row[0];
+					idMaterial = database::skillMaterial_saveAction(conn,atoi(idSkill),idMaterial);
+					if(idMaterial!=-1)
+					{
+						//ui.step2WidgetInfo
+						std::string temp1 = index.toStdString();
+						const char* temp2 = temp1.c_str();
+						int in = atoi(temp2);
+						QListWidget *list =  skillWidgets.at(in);
+						list->addItem(text);
+					}
+				}
+			}
+		}
+		return ok;
+	}
+	//  END :ADD COURSE TAB
+
 
 public:
 	MyClass(QWidget *parent = 0, Qt::WFlags flags = 0);
@@ -131,49 +172,27 @@ public:
 
 private:
 	Ui::MyClassClass ui;
+	// ADD COURSE TAB
 	private slots:
 		void listMaterial(QString skill)
 		{
-			int a = 0;
-			
-			return;
+			int a = 0;		
+			listDialog *b = new listDialog(this,1,tr("Qqq"));
+			b->exec();
+			int c = 1;
 		}
 
 		void addMaterial(QString skillNId)
 		{			
 		/**
 		**	@parameter: skillNID : "<skill>,<id>"
-		**/			
-			bool ok;
-			QStringList stringlist = skillNId.split(",");
-			QString skill = stringlist.at(0);
-			QString index = stringlist.at(1);
-			QString text =  materialBox(skill,ok);
-			int idMaterial = -1;
-			if (ok && !text.isEmpty())
+		**/		
+			bool isAdd = isAddMaterial(skillNId);
+			while(isAdd ==true)
 			{
-				int idMaterial = database::material_saveAction(conn,text);
-				if(idMaterial !=-1 )
-				{
-					//insert into skill_material table		
-					MYSQL_ROW row;
-					if(row = database::skill_searchName(conn,skill))
-					{
-						char* idSkill = row[0];
-						idMaterial = database::skillMaterial_saveAction(conn,atoi(idSkill),idMaterial);
-						if(idMaterial!=-1)
-						{
-							//ui.step2WidgetInfo
-							std::string temp1 = index.toStdString();
-							const char* temp2 = temp1.c_str();
-							int in = atoi(temp2);
-							QListWidget *list =  skillWidgets.at(in);
-							list->addItem(text);
-							int a = 0;
-						}
-					}
-				}
+				isAdd = isAddMaterial(skillNId);
 			}
+			
 		}
 
 		void addSkillAction()
@@ -184,33 +203,6 @@ private:
 			if (ok && !text.isEmpty())
 				if(database::skill_saveAction(conn,text)!=-1)
 					ui.leftWidget->addItem(text);
-		}
-
-		void openFileAction()
-		{
-			// get data of a colum and row
-			QString a = model->data(model->index(0,0), Qt::DisplayRole).toString();
-			int b = 1;
-		}
-
-		void createAction()
-		{
-			
-		}
-
-		void editAction()
-		{
-
-		}
-
-		void deleteAction()
-		{
-
-		}
-
-		void saveAction()
-		{
-
 		}
 
 		void step1SaveAction() // disable step 1, enable step 2, update info to info box
@@ -252,14 +244,12 @@ private:
 			setupStep3Add(numElement);	
 			ui.line2_3->setVisible(true);
 			ui.step3Widget->setVisible(true);
+			ui.step2Widget->setEnabled(false);
 			//set up what show in info box
 			ui.skillLabelShow->setVisible(true);
 			setupInfoBoxStep2Save(numElement);
 		}
-
-		
-
-		void step3SaveAction()
+		void saveCourseAction()
 		{
 
 		}
@@ -306,7 +296,34 @@ private:
 			ui.leftWidget->addItem(item2);
 		}
 
-		
+	private slots:
+		// share action
+		void openFileAction()
+		{
+			// get data of a colum and row
+			QString a = model->data(model->index(0,0), Qt::DisplayRole).toString();
+			int b = 1;
+		}
+
+		void createAction()
+		{
+			
+		}
+
+		void editAction()
+		{
+
+		}
+
+		void deleteAction()
+		{
+
+		}
+
+		void saveAction()
+		{
+
+		}
 
 };
 
