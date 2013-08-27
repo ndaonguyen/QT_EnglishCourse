@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QListWidgetItem>
 #include <QInputDialog>
+#include <QSignalMapper>
 #include "ui_myclass.h"
 #include "database.h"
 
@@ -18,6 +19,7 @@ public:
 	// info course
 	QString courseName;
 	QList<QString> skillsCourse;
+	QList<QListWidget *> skillWidgets;
 	bool step1;
 	bool step2;
 	bool step3;	
@@ -36,9 +38,91 @@ public:
 			}			
 		}
 	}
-	void setupConnectMaterial(QMainWindow *MyClassClass)
+	void setupStep3Add(int numElementSkillBox) 
 	{
+		QWidget *verticalLayoutWidget;
+		QVBoxLayout *verticalLayout;			
+		QHBoxLayout *horizontalLayout_2;
+
+		verticalLayoutWidget = new QWidget(ui.step3Widget);
+		verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
+	
+		QRect rectLayoutSkill = ui.step3Widget->geometry();
+		int xMargin = 100;
+		int yMargin = 20;
+//		verticalLayoutWidget->setGeometry(QRect(rectLayoutSkill.x()+xMargin,rectLayoutSkill.y()+yMargin,rectLayoutSkill.width() - yMargin, rectLayoutSkill.height() - xMargin));
 		
+		verticalLayoutWidget->setGeometry(QRect(30, 40, 321, 201));
+		verticalLayout = new QVBoxLayout(verticalLayoutWidget);
+		verticalLayout->setSpacing(6);
+		verticalLayout->setContentsMargins(11, 11, 11, 11);
+		verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+		verticalLayout->setContentsMargins(0, 0, 0, 0);
+		
+		for( int i =0;i<numElementSkillBox;i++)
+		{
+			QSignalMapper *signalMapper = new QSignalMapper(this);
+			QSignalMapper *signalMapper1 = new QSignalMapper(this);
+
+			QString skill = ui.rightWidget->item(i)->text();
+			skillsCourse.append(skill);
+
+			QLabel *skillLabel = new QLabel("<b>"+skill+"</b>");
+			verticalLayout->addWidget(skillLabel);
+
+			horizontalLayout_2 = new QHBoxLayout();
+			horizontalLayout_2->setSpacing(6);
+			horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+
+			QLabel *temp = new QLabel(verticalLayoutWidget);
+			horizontalLayout_2->addWidget(temp);
+
+			QPushButton *addButton = new QPushButton(verticalLayoutWidget);
+			addButton->setText("Add material");
+			horizontalLayout_2->addWidget(addButton);
+			addButton->setObjectName(QString::fromUtf8("addMaterialButton")+QString::number(i));
+			signalMapper->setMapping(addButton,skill+","+QString::number(i));
+			connect(addButton,SIGNAL(clicked()),signalMapper, SLOT(map()));
+			connect(signalMapper, SIGNAL(mapped(QString)),this, SLOT(addMaterial(QString)));
+
+
+			QPushButton *listButton  = new QPushButton(verticalLayoutWidget);
+			listButton->setText("List materials");
+			horizontalLayout_2->addWidget(listButton);
+			listButton->setObjectName(QString::fromUtf8("listMaterialButton")+QString::number(i));
+
+			signalMapper1->setMapping(listButton,skill);
+			connect(listButton,SIGNAL(clicked()),signalMapper1, SLOT(map()));
+			connect(signalMapper1, SIGNAL(mapped(QString)),this, SLOT(listMaterial(QString)));
+
+			QLabel *temp1 = new QLabel(verticalLayoutWidget);
+			horizontalLayout_2->addWidget(temp1);
+
+			verticalLayout->addLayout(horizontalLayout_2);
+
+		}
+		verticalLayoutWidget->raise();
+		verticalLayoutWidget->show();
+	}
+
+	void setupInfoBoxStep2Save(int numElementBoxSkill)
+	{
+		for(int i =0;i<numElementBoxSkill;i++)
+		{
+			QString skill = ui.rightWidget->item(i)->text();
+			QLabel *skillLabel = new QLabel(skill);
+			ui.step2Layout->addWidget(skillLabel);
+
+			QListWidget *listSkill = new QListWidget(ui.step2WidgetInfo);
+			listSkill->setObjectName(skill+QString::fromUtf8("ListWidget"));
+			ui.step2Layout->addWidget(listSkill);
+			skillWidgets.append(listSkill);
+		}
+	}
+	QString materialBox(QString skill)
+	{
+		QString text = QInputDialog::getText(this, tr("Add Material to ") + skill,tr("Material:"), QLineEdit::Normal, tr("try try"),&ok);
+		return text;
 	}
 
 public:
@@ -48,28 +132,57 @@ public:
 private:
 	Ui::MyClassClass ui;
 	private slots:
-		void addMaterial()
-		{
-			int b = 0;
-			int c = b;
-		}
-
 		void listMaterial(QString skill)
 		{
 			int a = 0;
+			
+			return;
+		}
+
+		void addMaterial(QString skillNId)
+		{			
+		/**
+		**	@parameter: skillNID : "<skill>,<id>"
+		**/
+			bool ok;
+			QStringList stringlist = skillNId.split(",");
+			QString skill = stringlist.at(0);
+			QString index = stringlist.at(1);
+			QString text =  materialBox(QString skill);
+			int idMaterial = -1;
+			if (ok && !text.isEmpty())
+			{
+				int idMaterial = database::material_saveAction(conn,text);
+				if(idMaterial !=-1 )
+				{
+					//insert into skill_material table		
+					MYSQL_ROW row;
+					if(row = database::skill_searchName(conn,skill))
+					{
+						char* idSkill = row[0];
+						idMaterial = database::skillMaterial_saveAction(conn,atoi(idSkill),idMaterial);
+						if(idMaterial!=-1)
+						{
+							//ui.step2WidgetInfo
+							std::string temp1 = index.toStdString();
+							const char* temp2 = temp1.c_str();
+							int in = atoi(temp2);
+							QListWidget *list =  skillWidgets.at(in);
+							list->addItem(text);
+							int a = 0;
+						}
+					}
+				}
+			}
 		}
 
 		void addSkillAction()
 		{
 			bool ok;
 			QString text = QInputDialog::getText(this, tr("Add Skill"),tr("Skill:"), QLineEdit::Normal, tr("try try"),&ok);
-				
-			QString query = "INSERT INTO `english_course`.`skill` VALUES(NULL,'"+text+"')";
-			std::string query2 = query.toStdString();
-			const char* query1 = query2.c_str();
-
+	
 			if (ok && !text.isEmpty())
-				if(mysql_query(conn,query1)==0)
+				if(database::skill_saveAction(conn,text)!=-1)
 					ui.leftWidget->addItem(text);
 		}
 
@@ -114,7 +227,8 @@ private:
 			step1 = true;
 
 			fillDataStep2();
-			ui.step2Widget->setVisible(true);	
+			ui.step2Widget->setVisible(true);
+			ui.line1_2->setVisible(true);
 
 			// info is updated to info box
 			QLabel *courseLabel = new QLabel(ui.classInsertGroupBox);
@@ -128,77 +242,19 @@ private:
 
 		void step2SaveAction() // save value to skillsCourse, fill step 3 info, step 3 appear, fill info into info bo
 		{
-			/*
-			QVBoxLayout *skill = new QVBoxLayout(ui.step3Widget);
-			skill->setSpacing(6);
-			skill->setContentsMargins(11, 11, 11, 11);
-			skill->setContentsMargins(0, 0, 0, 0);
-			QRect rectLayoutSkill = ui.step3Widget->geometry();
-			int xMargin = 100;
-			int yMargin = 20;
-			skill->setGeometry(QRect(rectLayoutSkill.x()+xMargin,rectLayoutSkill.y()+yMargin,rectLayoutSkill.width() - yMargin, rectLayoutSkill.height() - xMargin));
-			*/
-
-			QWidget *verticalLayoutWidget;
-			QVBoxLayout *verticalLayout;			
-			QHBoxLayout *horizontalLayout_2;
-
-			verticalLayoutWidget = new QWidget(ui.step3Widget);
-			verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
-		
-			QRect rectLayoutSkill = ui.step3Widget->geometry();
-			int xMargin = 100;
-			int yMargin = 20;
-	//		verticalLayoutWidget->setGeometry(QRect(rectLayoutSkill.x()+xMargin,rectLayoutSkill.y()+yMargin,rectLayoutSkill.width() - yMargin, rectLayoutSkill.height() - xMargin));
-			
-			verticalLayoutWidget->setGeometry(QRect(30, 40, 321, 201));
-			verticalLayout = new QVBoxLayout(verticalLayoutWidget);
-			verticalLayout->setSpacing(6);
-			verticalLayout->setContentsMargins(11, 11, 11, 11);
-			verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-			verticalLayout->setContentsMargins(0, 0, 0, 0);
-
 			int numElement = ui.rightWidget->count();
-			QList <QPushButton*> qListButtonAdd;
-			QList <QPushButton*> qListButtonList;
-			for( int i =0;i<numElement;i++)
+			if(numElement == 0)
 			{
-				QString skill = ui.rightWidget->item(i)->text();
-				skillsCourse.append(skill);
-
-				QLabel *skillLabel = new QLabel("<b>"+skill+"</b>");
-				verticalLayout->addWidget(skillLabel);
-
-				horizontalLayout_2 = new QHBoxLayout();
-				horizontalLayout_2->setSpacing(6);
-				horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
-
-				QLabel *temp = new QLabel(verticalLayoutWidget);
-				horizontalLayout_2->addWidget(temp);
-
-				QPushButton *addButton = new QPushButton(verticalLayoutWidget);
-				addButton->setText("Add material");
-				horizontalLayout_2->addWidget(addButton);
-				qListButtonAdd.append(addButton);
-				addButton->setObjectName(QString::fromUtf8("addMaterialButton")+QString::number(i));
-				connect(addButton,SIGNAL(clicked()),this,SLOT(addMaterial()));
-
-				QPushButton *listButton  = new QPushButton(verticalLayoutWidget);
-				listButton->setText("List materials");
-				horizontalLayout_2->addWidget(listButton);
-				qListButtonList.append(listButton);
-				listButton->setObjectName(QString::fromUtf8("listMaterialButton")+QString::number(i));
-				connect(listButton,SIGNAL(clicked()),this,SLOT(listMaterial()));
-
-				QLabel *temp1 = new QLabel(verticalLayoutWidget);
-				horizontalLayout_2->addWidget(temp1);
-
-				verticalLayout->addLayout(horizontalLayout_2);
-
+				QMessageBox::warning(this,tr("Skill choice"),tr("Please choose skills!!"));
+				return;
 			}
-			verticalLayoutWidget->raise();
-			verticalLayoutWidget->show();
-			
+			//set up What appear in info added box
+			setupStep3Add(numElement);	
+			ui.line2_3->setVisible(true);
+			ui.step3Widget->setVisible(true);
+			//set up what show in info box
+			ui.skillLabelShow->setVisible(true);
+			setupInfoBoxStep2Save(numElement);
 		}
 
 		
@@ -246,11 +302,8 @@ private:
 
 		void right2LeftClickAction()
 		{
-		//	QListWidgetItem *item2 = ui.rightWidget->takeItem(ui.rightWidget->currentRow());
-		//	ui.leftWidget->addItem(item2);
-			bool ok;
-			QString text = QInputDialog::getText(this, tr("Add Skill"),tr("Skill:"), QLineEdit::Normal, tr("try try"),&ok);
-		
+			QListWidgetItem *item2 = ui.rightWidget->takeItem(ui.rightWidget->currentRow());
+			ui.leftWidget->addItem(item2);
 		}
 
 		

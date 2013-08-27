@@ -7,8 +7,11 @@ MyClass::MyClass(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags)
 {
 	ui.setupUi(this);
-	setupConnectMaterial(this);
-//	ui.step2Widget->setVisible(false);
+	ui.line1_2->setVisible(false);
+	ui.line2_3->setVisible(false);
+	ui.step2Widget->setVisible(false);
+	ui.step3Widget->setVisible(false);
+	ui.skillLabelShow->setVisible(false);
 	conn = database::connectByC();
 	step1 = false;
 	step2 = false;

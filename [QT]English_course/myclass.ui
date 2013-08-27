@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>940</width>
+    <width>917</width>
     <height>800</height>
    </rect>
   </property>
@@ -17,10 +17,10 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>941</width>
-      <height>581</height>
+      <x>30</x>
+      <y>10</y>
+      <width>861</width>
+      <height>601</height>
      </rect>
     </property>
     <property name="toolTip">
@@ -79,22 +79,22 @@
      <widget class="QGroupBox" name="classInsertGroupBox">
       <property name="geometry">
        <rect>
-        <x>600</x>
+        <x>500</x>
         <y>10</y>
-        <width>321</width>
-        <height>531</height>
+        <width>341</width>
+        <height>551</height>
        </rect>
       </property>
       <property name="toolTip">
        <string>Add skills</string>
       </property>
       <property name="title">
-       <string>Class inserted :</string>
+       <string>Info inserted :</string>
       </property>
       <widget class="QWidget" name="horizontalLayoutWidget">
        <property name="geometry">
         <rect>
-         <x>50</x>
+         <x>20</x>
          <y>20</y>
          <width>261</width>
          <height>41</height>
@@ -102,16 +102,39 @@
        </property>
        <layout class="QHBoxLayout" name="step1Layout"/>
       </widget>
-      <widget class="QWidget" name="horizontalLayoutWidget_2">
+      <widget class="QLabel" name="skillLabelShow">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>70</y>
+         <width>46</width>
+         <height>13</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Skills:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+      <widget class="QWidget" name="step2WidgetInfo" native="true">
        <property name="geometry">
         <rect>
          <x>50</x>
-         <y>70</y>
+         <y>100</y>
          <width>261</width>
-         <height>111</height>
+         <height>441</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="step2Layout"/>
+       <widget class="QWidget" name="verticalLayoutWidget_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>261</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="step2Layout"/>
+       </widget>
       </widget>
      </widget>
      <widget class="QWidget" name="step1Widget" native="true">
@@ -187,7 +210,7 @@
       <property name="geometry">
        <rect>
         <x>70</x>
-        <y>110</y>
+        <y>130</y>
         <width>381</width>
         <height>161</height>
        </rect>
@@ -331,9 +354,9 @@
       <property name="geometry">
        <rect>
         <x>70</x>
-        <y>280</y>
+        <y>320</y>
         <width>381</width>
-        <height>271</height>
+        <height>241</height>
        </rect>
       </property>
       <widget class="QLabel" name="step2Label_2">
@@ -352,7 +375,7 @@
       <widget class="QPushButton" name="saveButton3">
        <property name="geometry">
         <rect>
-         <x>170</x>
+         <x>340</x>
          <y>0</y>
          <width>41</width>
          <height>31</height>
@@ -373,6 +396,32 @@
        </property>
       </widget>
      </widget>
+     <widget class="Line" name="line1_2">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>110</y>
+        <width>381</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="Line" name="line2_3">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>300</y>
+        <width>381</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
@@ -381,7 +430,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>940</width>
+     <width>917</width>
      <height>21</height>
     </rect>
    </property>
@@ -568,8 +617,8 @@
    <slot>step1SaveAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>439</x>
-     <y>107</y>
+     <x>471</x>
+     <y>137</y>
     </hint>
     <hint type="destinationlabel">
      <x>460</x>
@@ -584,8 +633,8 @@
    <slot>step2SaveAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>424</x>
-     <y>202</y>
+     <x>456</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>529</x>
@@ -600,8 +649,8 @@
    <slot>step3SaveAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>279</x>
-     <y>371</y>
+     <x>442</x>
+     <y>437</y>
     </hint>
     <hint type="destinationlabel">
      <x>393</x>
@@ -616,8 +665,8 @@
    <slot>left2RightAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>263</x>
-     <y>242</y>
+     <x>295</x>
+     <y>279</y>
     </hint>
     <hint type="destinationlabel">
      <x>170</x>
@@ -632,8 +681,8 @@
    <slot>right2LeftAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>241</x>
-     <y>273</y>
+     <x>273</x>
+     <y>309</y>
     </hint>
     <hint type="destinationlabel">
      <x>257</x>
@@ -648,8 +697,8 @@
    <slot>all2RightAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>252</x>
-     <y>299</y>
+     <x>284</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
      <x>200</x>
@@ -664,8 +713,8 @@
    <slot>all2LeftAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>275</x>
-     <y>333</y>
+     <x>307</x>
+     <y>369</y>
     </hint>
     <hint type="destinationlabel">
      <x>451</x>
@@ -712,12 +761,28 @@
    <slot>addSkillAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>383</x>
-     <y>203</y>
+     <x>415</x>
+     <y>247</y>
     </hint>
     <hint type="destinationlabel">
      <x>636</x>
      <y>752</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>courseNameLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>step1SaveAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>308</x>
+     <y>166</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>502</x>
+     <y>675</y>
     </hint>
    </hints>
   </connection>
