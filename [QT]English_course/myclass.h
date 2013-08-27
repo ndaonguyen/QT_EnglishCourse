@@ -119,9 +119,8 @@ public:
 			skillWidgets.append(listSkill);
 		}
 	}
-	QString materialBox(QString skill)
+	QString materialBox(QString skill,bool ok)
 	{
-		bool ok;
 		QString text = QInputDialog::getText(this, tr("Add Material to ") + skill,tr("Material:"), QLineEdit::Normal, tr("try try"),&ok);
 		return text;
 	}
@@ -145,10 +144,11 @@ private:
 		/**
 		**	@parameter: skillNID : "<skill>,<id>"
 		**/			
+			bool ok;
 			QStringList stringlist = skillNId.split(",");
 			QString skill = stringlist.at(0);
 			QString index = stringlist.at(1);
-			QString text =  materialBox(QString skill);
+			QString text =  materialBox(skill,ok);
 			int idMaterial = -1;
 			if (ok && !text.isEmpty())
 			{
