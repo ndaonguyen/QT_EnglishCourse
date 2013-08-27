@@ -56,6 +56,30 @@ public:
 	}
 
 	// MATERIAL TABLE
+	static MYSQL_ROW material_searchMaterialId(MYSQL *connect, int materialId)
+	{
+	/**
+	** @parameter : skillID	
+	** @return:  row of all value from skill table
+	*/
+		MYSQL_RES *res_set;
+		MYSQL_ROW row;
+		char bufferId[5];
+		itoa(materialId,bufferId,10);
+
+		QString tem = "SELECT * FROM `english_course`.`material` WHERE `id` = '"+QString::fromUtf8(bufferId)+"'";			
+		std::string temp1 = tem.toStdString();
+		const char* temp2 = temp1.c_str();
+		if(mysql_query(connect,temp2) ==0)
+		{
+			res_set = mysql_store_result(connect);
+			row = mysql_fetch_row(res_set);
+			return row;
+		}
+		return NULL;
+
+	}
+
 	static int material_getMaxId(MYSQL *connect)
 	{
 	/**
@@ -93,6 +117,30 @@ public:
 	}
 
 	//SKILL TABLE
+	static MYSQL_ROW skill_searchSkillId(MYSQL *connect, int skillId)
+	{
+	/**
+	** @parameter : skillID	
+	** @return:  row of all value from skill table
+	*/
+		MYSQL_RES *res_set;
+		MYSQL_ROW row;
+		char bufferId[5];
+		itoa(skillId,bufferId,10);
+
+
+		QString tem = "SELECT * FROM `english_course`.`skill` WHERE `id` = '"+QString::fromUtf8(bufferId)+"'";			
+		std::string temp1 = tem.toStdString();
+		const char* temp2 = temp1.c_str();
+		if(mysql_query(connect,temp2) ==0)
+		{
+			res_set = mysql_store_result(connect);
+			row = mysql_fetch_row(res_set);
+			return row;
+		}
+		return NULL;
+	}
+
 	static int skill_saveAction(MYSQL *connect, QString skillName)
 	{
 	/**
@@ -163,6 +211,29 @@ public:
 			return atoi(row[0]);
 		}
 		return -1;
+	}
+
+	static MYSQL_RES* skillMaterial_searchSkillId(MYSQL *connect, int skillId)
+	{
+		/**
+		** @parameter: skill id
+		** @return : row of all value 
+		*/
+		MYSQL_RES *res_set;
+//		MYSQL_ROW *row ;
+		char bufferId[5];
+		itoa(skillId,bufferId,10);
+
+		QString tem = "SELECT * FROM `english_course`.`skill_material` WHERE `skill_id` = '"+QString::fromUtf8(bufferId)+"'";			
+		std::string temp1 = tem.toStdString();
+		const char* temp2 = temp1.c_str();
+		if(mysql_query(connect,temp2) ==0)
+		{
+			res_set = mysql_store_result(connect);
+		//	row = mysql_fetch_row(res_set);
+			return res_set;
+		}
+		return NULL;
 	}
 
 	static int skillMaterial_saveAction(MYSQL *connect,int idSkill, int idMaterial)

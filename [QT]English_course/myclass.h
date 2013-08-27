@@ -177,7 +177,7 @@ private:
 		void listMaterial(QString skill)
 		{
 			int a = 0;		
-			listDialog *b = new listDialog(this,1,tr("Qqq"));
+			listDialog *b = new listDialog(this,skill);
 			b->exec();
 			int c = 1;
 		}

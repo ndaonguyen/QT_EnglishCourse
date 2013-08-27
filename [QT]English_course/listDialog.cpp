@@ -1,58 +1,35 @@
 #include <QtGui>
 #include "listDialog.h"
 
- listDialog::listDialog(QWidget *parent,int index, QString skillName)
+listDialog::listDialog(QWidget *parent, QString skillName)
     : QDialog(parent)
- {
-     label = new QLabel(tr("Find &what:"));
-     lineEdit = new QLineEdit;
-     label->setBuddy(lineEdit);
-     caseCheckBox = new QCheckBox(tr("Match &case"));
-     backwardCheckBox = new QCheckBox(tr("Search &backward"));
-     findButton = new QPushButton(tr("&Find"));
-     findButton->setDefault(true);
-	 closeButton = new QPushButton(tr("&Close"));
+{
+	label       = new QLabel(tr("List  of Material ")+skillName);
+	listWidget  = new QListWidget(parent);
+	MYSQL* conn = database::connectByC();
+	MYSQL_ROW skillRow = database::skill_searchName(conn,skillName);
+	if (skillRow)
+	{
+		int skillId = atoi(skillRow[0]);
+		MYSQL_RES* res_set =  database::skillMaterial_searchSkillId(conn,skillId);
+		MYSQL_ROW row;
+		while(row = mysql_fetch_row(res_set))
+		{
+			int materialId = atoi(row[1]);
+			MYSQL_ROW rowMaterial =  database::material_searchMaterialId(conn,materialId);
+			QString material = QString::fromUtf8(rowMaterial[1]);
+			listWidget->addItem(material);
 
-     connect(lineEdit, SIGNAL(textChanged(const QString &)),
-             this, SLOT(enableFindButton(const QString &)));
-     connect(findButton, SIGNAL(clicked()),
-             this, SLOT(findClicked()));
-     connect(closeButton, SIGNAL(clicked()),
-             this, SLOT(close()));
+		}
+	}
 
-     QHBoxLayout *topLeftLayout = new QHBoxLayout;
-     topLeftLayout->addWidget(label);
-     topLeftLayout->addWidget(lineEdit);
-     QVBoxLayout *leftLayout = new QVBoxLayout;
-     leftLayout->addLayout(topLeftLayout);
-     leftLayout->addWidget(caseCheckBox);
-     leftLayout->addWidget(backwardCheckBox);
-     QVBoxLayout *rightLayout = new QVBoxLayout;
-     rightLayout->addWidget(findButton);
-     rightLayout->addWidget(closeButton);
-     rightLayout->addStretch();
-     QHBoxLayout *mainLayout = new QHBoxLayout;
-     mainLayout->addLayout(leftLayout);
-     mainLayout->addLayout(rightLayout);
-     setLayout(mainLayout);
-     setWindowTitle(tr("Find"));
-     setFixedHeight(sizeHint().height());
- }
 
- void listDialog::findClicked()
- {
-     QString text = lineEdit->text();
-     Qt::CaseSensitivity cs =
-             caseCheckBox->isChecked() ? Qt::CaseSensitive
-                                       : Qt::CaseInsensitive;
-     if (backwardCheckBox->isChecked()) {
-         emit findPrevious(text, cs);
-     } else {
-         emit findNext(text, cs);
-     }
- }
 
- void listDialog::enableFindButton(const QString &text)
- {
-     findButton->setEnabled(!text.isEmpty());
- }
+	QVBoxLayout *topLeftLayout = new QVBoxLayout;
+	topLeftLayout->addWidget(label);
+	topLeftLayout->addWidget(listWidget);
+
+	setLayout(topLeftLayout);
+	setWindowTitle(tr("Material list"));
+	setFixedHeight(sizeHint().height());
+}
