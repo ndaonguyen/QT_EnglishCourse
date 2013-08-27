@@ -14,11 +14,12 @@
 class MyClass : public QMainWindow
 {
 	Q_OBJECT
-public: 
+private: 
 	QStandardItemModel *model;
 	MYSQL *conn;
 	// info course
 	QString courseName;
+	int courseID;
 	QList<QString> skillsCourse;
 	QList<QListWidget *> skillWidgets;
 	bool step1;
@@ -83,7 +84,7 @@ public:
 			addButton->setText("Add material");
 			horizontalLayout_2->addWidget(addButton);
 			addButton->setObjectName(QString::fromUtf8("addMaterialButton")+QString::number(i));
-			signalMapper->setMapping(addButton,skill+","+QString::number(i));
+			signalMapper->setMapping(addButton,skill+","+QString::number(i)+","+QString::number(courseID));
 			connect(addButton,SIGNAL(clicked()),signalMapper, SLOT(map()));
 			connect(signalMapper, SIGNAL(mapped(QString)),this, SLOT(addMaterial(QString)));
 
@@ -127,15 +128,20 @@ public:
 		return text;
 	}
 
-	bool isAddMaterial(QString skillNId)
+	bool isAddMaterial(QString skillNIdNCourseId)
 	{
 	/**
 	**	@parameter: skillNID : "<skill>,<id>"
 	**/			
 		bool ok;
-		QStringList stringlist = skillNId.split(",");
+		QStringList stringlist = skillNIdNCourseId.split(",");
 		QString skill = stringlist.at(0);
 		QString index = stringlist.at(1);
+		QString courseId = stringlist.at(2);
+		std::string tempId1 = courseId.toStdString();
+		const char* courseIdTemp = tempId1.c_str();
+
+
 		QString text =  materialBox(skill,ok);
 		int idMaterial = -1;
 		if (ok && !text.isEmpty())
@@ -148,7 +154,7 @@ public:
 				if(row = database::skill_searchName(conn,skill))
 				{
 					char* idSkill = row[0];
-					idMaterial = database::skillMaterial_saveAction(conn,atoi(idSkill),idMaterial);
+					idMaterial = database::skillMaterial_saveAction(conn,atoi(idSkill),idMaterial,atoi(courseIdTemp));
 					if(idMaterial!=-1)
 					{
 						//ui.step2WidgetInfo
@@ -182,15 +188,15 @@ private:
 			int c = 1;
 		}
 
-		void addMaterial(QString skillNId)
+		void addMaterial(QString skillNIdNCourseId)
 		{			
 		/**
 		**	@parameter: skillNID : "<skill>,<id>"
 		**/		
-			bool isAdd = isAddMaterial(skillNId);
+			bool isAdd = isAddMaterial(skillNIdNCourseId);
 			while(isAdd ==true)
 			{
-				isAdd = isAddMaterial(skillNId);
+				isAdd = isAddMaterial(skillNIdNCourseId);
 			}
 			
 		}
@@ -216,6 +222,7 @@ private:
 			}
 			ui.step1Widget->setEnabled(false);
 			courseName = ui.courseNameLineEdit->text();
+			courseID = database::course_saveAction(conn,courseName);
 			step1 = true;
 
 			fillDataStep2();
@@ -239,6 +246,15 @@ private:
 			{
 				QMessageBox::warning(this,tr("Skill choice"),tr("Please choose skills!!"));
 				return;
+			}
+			//save to course_skill table
+			for(int i = 0;i<numElement;i++)
+			{
+				QString skill = ui.rightWidget->item(i)->text();
+				MYSQL_ROW row = database::skill_searchName(conn,skill);
+				QString skillIdTemp = row[0];
+				int skillId = skillIdTemp.toInt();
+				database::courseSkill_saveAction(conn,skillId,courseID);
 			}
 			//set up What appear in info added box
 			setupStep3Add(numElement);	
