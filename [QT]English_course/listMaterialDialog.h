@@ -5,11 +5,11 @@
 class QLabel;
 class QListWidget;
 
-class listDialog : public QDialog
+class listMaterialDialog : public QDialog
 {
     Q_OBJECT
 public:
-    listDialog(QWidget *parent = 0, QString skillName = "",int courseId=0);
+    listMaterialDialog(QWidget *parent = 0, QString skillName = "",int courseId=0);
 
 private:
     QLabel *label;

@@ -7,7 +7,7 @@
 #include <QListWidgetItem>
 #include <QInputDialog>
 #include <QSignalMapper>
-#include "listDialog.h"
+#include "listMaterialDialog.h"
 #include "ui_myclass.h"
 #include "database.h"
 
@@ -15,7 +15,8 @@ class MyClass : public QMainWindow
 {
 	Q_OBJECT
 private: 
-	QStandardItemModel *model;
+	QStandardItemModel *listClassModel;
+	QStandardItemModel *listCourseModel;
 	MYSQL *conn;
 	// info course
 	QString courseName;
@@ -228,8 +229,150 @@ public:
 		}
 		return ok;
 	}
+
+	void loadConfigAddCourseTab()
+	{
+		QSignalMapper *signalMapper = new QSignalMapper(this);
+		signalMapper->setMapping(ui.saveButton,0);
+		QObject::connect(ui.saveButton,SIGNAL(clicked()),signalMapper, SLOT(map()));
+		QObject::connect(signalMapper, SIGNAL(mapped(int)),this, SLOT(step1SaveAction(int)));
+
+		QSignalMapper *signalMapper1 = new QSignalMapper(this);
+		signalMapper1->setMapping(ui.courseNameLineEdit,0);
+		QObject::connect(ui.courseNameLineEdit,SIGNAL(returnPressed()),signalMapper1, SLOT(map()));
+		QObject::connect(signalMapper1, SIGNAL(mapped(int)),this, SLOT(step1SaveAction(int)));
+	 
+		QSignalMapper *signalMapper2 = new QSignalMapper(this);
+		signalMapper2->setMapping(ui.saveButton2,0);
+		QObject::connect(ui.saveButton2,SIGNAL(clicked()),signalMapper2, SLOT(map()));
+		QObject::connect(signalMapper2, SIGNAL(mapped(int)),this, SLOT(step2SaveAction(int)));
+
+		ui.saveCourseButton->setVisible(false);
+		ui.line1_2->setVisible(false);
+		ui.line2_3->setVisible(false);
+		ui.step2Widget->setVisible(false);
+		ui.step3Widget->setVisible(false);
+		ui.skillLabelShow->setVisible(false);
+	}
 	//  END :ADD COURSE TAB
 
+	// START: LIST CLASS TAB
+	
+	void loadListClassTab()
+	{
+		listClassModel = new QStandardItemModel(this); //2 Rows and 3 Columns
+		listClassModel->setHorizontalHeaderItem(0, new QStandardItem(QString("Class name")));
+		listClassModel->setHorizontalHeaderItem(1, new QStandardItem(QString("Res date")));
+		listClassModel->setHorizontalHeaderItem(2, new QStandardItem(QString("Member")));
+		listClassModel->setHorizontalHeaderItem(3, new QStandardItem(QString("Course")));
+		listClassModel->setHorizontalHeaderItem(4, new QStandardItem(QString("% day")));
+		listClassModel->setHorizontalHeaderItem(5, new QStandardItem(QString("% material")));
+
+		// Add value to a cell in table
+		QStandardItem *firstRow = new QStandardItem(QString("ColumnValue"));
+		listClassModel->setItem(0,0,firstRow);
+
+		QStandardItem *row2 = new QStandardItem(QString("ColumnValue"));
+		listClassModel->setItem(0,1,row2);
+
+		QStandardItem *row3 = new QStandardItem(QString("ColumnValue"));
+		listClassModel->setItem(0,2,row3);
+
+		QStandardItem *row4 = new QStandardItem(QString("ColumnValue"));
+		listClassModel->setItem(0,3,row4);
+		 
+		ui.listTable->setModel(listClassModel);
+	}
+	// END: LIST CLASS TAB
+
+
+	//  START :LIST COURSE TAB
+	
+
+	QString getSkillList(QString courseId)
+	{
+		QString  temp = courseId;
+		std::string idTemp = temp.toStdString();
+		const char* idTemp2 = idTemp.c_str();
+		
+		MYSQL_ROW row2;
+		MYSQL_RES* rest2 = database::courseSkill_searchCourseId(conn, atoi(idTemp2));
+		QString skillString="";
+		while(row2 = mysql_fetch_row(rest2))
+		{
+			temp = row2[1];
+			idTemp = temp.toStdString();
+			idTemp2 = idTemp.c_str();	
+			MYSQL_ROW row3 = database::skill_searchSkillId(conn, atoi(idTemp2));
+			skillString = skillString + row3[1] +",";
+		}
+		skillString = skillString.mid(0,skillString.length()-1);  // Skill of that course
+		return skillString;
+	}
+
+	void loadListCourseTab()
+	{
+		int column = 3;
+		listCourseModel = new QStandardItemModel(ui.listCourseTab);
+		
+		listCourseModel->setHorizontalHeaderItem(0,new QStandardItem(tr("Course Name")));
+		listCourseModel->setHorizontalHeaderItem(1,new QStandardItem(tr("Skill")));
+		listCourseModel->setHorizontalHeaderItem(2,new QStandardItem(tr("Material")));
+		listCourseModel->setHorizontalHeaderItem(3,new QStandardItem(tr("Edit")));
+		listCourseModel->setHorizontalHeaderItem(4,new QStandardItem(tr("Delete")));
+	//	ui.listCourseTable->setColumnWidth(3,100);
+
+		MYSQL_RES* res_set = database::course_getAll(conn);
+		MYSQL_ROW row;
+		int indexRow =0;
+		QList<QString> courseIdList;
+		while(row = mysql_fetch_row(res_set))
+		{
+			QString course   = row[1];  // courseName
+			QString courseId = row[0];
+			courseIdList.append(courseId);
+
+			QString skillString = getSkillList(courseId);	
+		
+			listCourseModel->setItem(indexRow,0,new QStandardItem(course));
+			listCourseModel->setItem(indexRow,1,new QStandardItem(skillString));
+			indexRow++;
+		}
+		ui.listCourseTable->setModel(listCourseModel);
+
+		//Add button Detail và Button Edit vào
+		int numCourseId = courseIdList.length();
+		for(int i = 0 ; i < numCourseId ; i++)
+		{
+			QPushButton *detailButton = new QPushButton("Detail");			
+			QSignalMapper *signalMapper = new QSignalMapper(this);
+			signalMapper->setMapping(detailButton,courseIdList.at(i));
+			QObject::connect(detailButton,SIGNAL(clicked()),signalMapper, SLOT(map()));
+			QObject::connect(signalMapper, SIGNAL(mapped(QString)),this, SLOT(loadDialogAction(QString)));			
+			ui.listCourseTable->setIndexWidget(listCourseModel->index(i,2),detailButton);
+
+
+			QPushButton *editButton = new QPushButton("Edit");
+			QPixmap pixmap("Resources/edit.jpg");
+			QIcon ButtonIcon(pixmap);
+			editButton->setIcon(ButtonIcon);
+			QSignalMapper *signalMapper1 = new QSignalMapper(this);
+			signalMapper1->setMapping(editButton,courseIdList.at(i));
+			QObject::connect(editButton,SIGNAL(clicked()),signalMapper1, SLOT(map()));
+			QObject::connect(signalMapper1, SIGNAL(mapped(QString)),this, SLOT(editCourseAction(QString)));
+			ui.listCourseTable->setIndexWidget(listCourseModel->index(i,3),editButton);
+
+			QPushButton *deleteButton = new QPushButton("Delete");
+			QPixmap pixmap1("Resources/Delete_icon.png");
+			QIcon ButtonIcon1(pixmap1);
+			deleteButton->setIcon(ButtonIcon1);
+			QSignalMapper *signalMapper2 = new QSignalMapper(this);
+			signalMapper2->setMapping(deleteButton,courseIdList.at(i));
+			QObject::connect(deleteButton,SIGNAL(clicked()),signalMapper2, SLOT(map()));
+			QObject::connect(signalMapper2, SIGNAL(mapped(QString)),this, SLOT(deleteCourseAction(QString)));
+			ui.listCourseTable->setIndexWidget(listCourseModel->index(i,4),deleteButton);
+		}
+	}
 
 public:
 	MyClass(QWidget *parent = 0, Qt::WFlags flags = 0);
@@ -332,7 +475,7 @@ private:
 		void listMaterial(QString skill)
 		{
 			int a = 0;		
-			listDialog *b = new listDialog(this,skill,courseID);
+			listMaterialDialog *b = new listMaterialDialog(this,skill,courseID);
 			b->exec();
 			int c = 1;
 		}
@@ -356,13 +499,14 @@ private:
 			// active List Course tab
 			QWidget * tab = ui.mainTab->widget(2);
 			ui.mainTab->setCurrentWidget(tab);
+			// load course list
 		}
 	private slots:
 		// share action
 		void openFileAction()
 		{
 			// get data of a colum and row
-			QString a = model->data(model->index(0,0), Qt::DisplayRole).toString();
+			QString a = listClassModel->data(listClassModel->index(0,0), Qt::DisplayRole).toString();
 			int b = 1;
 		}
 
@@ -383,6 +527,23 @@ private:
 
 		void saveAction()
 		{
+
+		}
+	// LIST COURSE TAB
+	private slots:
+		void loadDialogAction(QString courseId)
+		{
+			int a = 0;
+		}
+
+		void editCourseAction(QString courseId)
+		{
+			int a = 0;
+		}
+
+		void deleteCourseAction(QString courseId)
+		{
+			int a =0;
 
 		}
 

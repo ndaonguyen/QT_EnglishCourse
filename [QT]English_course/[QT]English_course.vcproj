@@ -163,7 +163,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\listDialog.cpp"
+				RelativePath=".\listMaterialDialog.cpp"
 				>
 			</File>
 			<File
@@ -185,14 +185,14 @@
 				>
 			</File>
 			<File
-				RelativePath=".\listDialog.h"
+				RelativePath=".\listMaterialDialog.h"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing listDialog.h..."
+						Description="Moc&apos;ing listMaterialDialog.h..."
 						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;  -DUNICODE -DWIN32 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB &quot;-I.\GeneratedFiles&quot; &quot;-I.&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
@@ -203,7 +203,7 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing listDialog.h..."
+						Description="Moc&apos;ing listMaterialDialog.h..."
 						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;  &quot;$(InputPath)&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;  -DUNICODE -DWIN32 -DQT_DLL -DQT_CORE_LIB -DQT_GUI_LIB &quot;-I.\GeneratedFiles&quot; &quot;-I.&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I.\GeneratedFiles\$(ConfigurationName)\.&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
@@ -338,7 +338,7 @@
 				SourceControlFiles="false"
 				>
 				<File
-					RelativePath=".\GeneratedFiles\Release\moc_listDialog.cpp"
+					RelativePath=".\GeneratedFiles\Release\moc_listMaterialDialog.cpp"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -368,7 +368,7 @@
 				SourceControlFiles="false"
 				>
 				<File
-					RelativePath=".\GeneratedFiles\Debug\moc_listDialog.cpp"
+					RelativePath=".\GeneratedFiles\Debug\moc_listMaterialDialog.cpp"
 					>
 					<FileConfiguration
 						Name="Release|Win32"

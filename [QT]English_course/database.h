@@ -293,6 +293,22 @@ public:
 		}
 		return -1;
 	}
+	static MYSQL_RES* course_getAll(MYSQL *connect)
+	{
+		QString query = "SELECT * FROM `english_course`.`course`";
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			MYSQL_RES *res_set;
+			res_set = mysql_store_result(connect);
+		//	row     = mysql_fetch_row(res_set);
+			return res_set;
+		}
+		return NULL;
+	}
+
+
 	static MYSQL_ROW course_searchName(MYSQL *connect, QString courseName)
 	{
 		/**
@@ -332,11 +348,12 @@ public:
 		const char* query1 = query2.c_str();
 		if(mysql_query(connect,query1)==0)
 		{
-			return skillMaterial_getMaxSkillID(connect);
+			return courseSkill_getMaxSkillID(connect);
 		}
 		return -1;
 	}
-	static int skillMaterial_getMaxSkillID(MYSQL *connect)
+
+	static int courseSkill_getMaxSkillID(MYSQL *connect)
 	{
 		QString query = "SELECT MAX(skill_id) FROM `english_course`.`course_skill`";
 		std::string query2 = query.toStdString();
@@ -352,6 +369,30 @@ public:
 		}
 		return -1;
 	}
+	
+	static MYSQL_RES* courseSkill_searchCourseId(MYSQL *connect,int courseId)
+	{
+	/**
+	** @parameter : courseId	
+	** @return:  row of all value from course_skill table
+	*/
+		MYSQL_RES *res_set;
+		char bufferId[5];
+		itoa(courseId,bufferId,10);
+
+
+		QString tem = "SELECT * FROM `english_course`.`course_skill` WHERE `course_id` = '"+QString::fromUtf8(bufferId)+"'";			
+		std::string temp1 = tem.toStdString();
+		const char* temp2 = temp1.c_str();
+		if(mysql_query(connect,temp2) ==0)
+		{
+			res_set = mysql_store_result(connect);
+		//	row = mysql_fetch_row(res_set);
+			return res_set;
+		}
+		return NULL;
+	}
+
 };
 
 

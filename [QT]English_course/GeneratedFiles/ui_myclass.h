@@ -44,12 +44,15 @@ public:
     QAction *actionSave;
     QWidget *centralWidget;
     QTabWidget *mainTab;
-    QWidget *listTab;
+    QWidget *listClassTab;
     QPushButton *searchButton;
     QLineEdit *searchLineEdit;
     QTableView *listTable;
     QWidget *addClassTab;
-    QWidget *tab;
+    QWidget *listCourseTab;
+    QTableView *listCourseTable;
+    QLineEdit *searchCourseLineEdit;
+    QPushButton *searchCourseButton;
     QWidget *addCourseTab;
     QGroupBox *classInsertGroupBox;
     QWidget *horizontalLayoutWidget;
@@ -122,24 +125,33 @@ public:
         mainTab = new QTabWidget(centralWidget);
         mainTab->setObjectName(QString::fromUtf8("mainTab"));
         mainTab->setGeometry(QRect(30, 10, 861, 601));
-        listTab = new QWidget();
-        listTab->setObjectName(QString::fromUtf8("listTab"));
-        searchButton = new QPushButton(listTab);
+        listClassTab = new QWidget();
+        listClassTab->setObjectName(QString::fromUtf8("listClassTab"));
+        searchButton = new QPushButton(listClassTab);
         searchButton->setObjectName(QString::fromUtf8("searchButton"));
         searchButton->setGeometry(QRect(240, 10, 51, 23));
-        searchLineEdit = new QLineEdit(listTab);
+        searchLineEdit = new QLineEdit(listClassTab);
         searchLineEdit->setObjectName(QString::fromUtf8("searchLineEdit"));
         searchLineEdit->setGeometry(QRect(20, 10, 211, 20));
-        listTable = new QTableView(listTab);
+        listTable = new QTableView(listClassTab);
         listTable->setObjectName(QString::fromUtf8("listTable"));
-        listTable->setGeometry(QRect(10, 40, 911, 421));
-        mainTab->addTab(listTab, QString());
+        listTable->setGeometry(QRect(20, 50, 691, 421));
+        mainTab->addTab(listClassTab, QString());
         addClassTab = new QWidget();
         addClassTab->setObjectName(QString::fromUtf8("addClassTab"));
         mainTab->addTab(addClassTab, QString());
-        tab = new QWidget();
-        tab->setObjectName(QString::fromUtf8("tab"));
-        mainTab->addTab(tab, QString());
+        listCourseTab = new QWidget();
+        listCourseTab->setObjectName(QString::fromUtf8("listCourseTab"));
+        listCourseTable = new QTableView(listCourseTab);
+        listCourseTable->setObjectName(QString::fromUtf8("listCourseTable"));
+        listCourseTable->setGeometry(QRect(10, 50, 671, 471));
+        searchCourseLineEdit = new QLineEdit(listCourseTab);
+        searchCourseLineEdit->setObjectName(QString::fromUtf8("searchCourseLineEdit"));
+        searchCourseLineEdit->setGeometry(QRect(10, 10, 201, 21));
+        searchCourseButton = new QPushButton(listCourseTab);
+        searchCourseButton->setObjectName(QString::fromUtf8("searchCourseButton"));
+        searchCourseButton->setGeometry(QRect(220, 10, 75, 23));
+        mainTab->addTab(listCourseTab, QString());
         addCourseTab = new QWidget();
         addCourseTab->setObjectName(QString::fromUtf8("addCourseTab"));
         classInsertGroupBox = new QGroupBox(addCourseTab);
@@ -282,7 +294,7 @@ public:
         QObject::connect(saveCourseButton, SIGNAL(clicked()), MyClassClass, SLOT(saveCourseAction()));
         QObject::connect(addSkill, SIGNAL(clicked()), MyClassClass, SLOT(addSkillAction()));
 
-        mainTab->setCurrentIndex(3);
+        mainTab->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(MyClassClass);
@@ -311,9 +323,10 @@ public:
         mainTab->setToolTip(QString());
 #endif // QT_NO_TOOLTIP
         searchButton->setText(QApplication::translate("MyClassClass", "Search", 0, QApplication::UnicodeUTF8));
-        mainTab->setTabText(mainTab->indexOf(listTab), QApplication::translate("MyClassClass", "List class", 0, QApplication::UnicodeUTF8));
+        mainTab->setTabText(mainTab->indexOf(listClassTab), QApplication::translate("MyClassClass", "List class", 0, QApplication::UnicodeUTF8));
         mainTab->setTabText(mainTab->indexOf(addClassTab), QApplication::translate("MyClassClass", "Add class", 0, QApplication::UnicodeUTF8));
-        mainTab->setTabText(mainTab->indexOf(tab), QApplication::translate("MyClassClass", "List Course", 0, QApplication::UnicodeUTF8));
+        searchCourseButton->setText(QApplication::translate("MyClassClass", "Search", 0, QApplication::UnicodeUTF8));
+        mainTab->setTabText(mainTab->indexOf(listCourseTab), QApplication::translate("MyClassClass", "List Course", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         classInsertGroupBox->setToolTip(QApplication::translate("MyClassClass", "Add skills", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP

@@ -1,7 +1,7 @@
 #include <QtGui>
-#include "listDialog.h"
+#include "listMaterialDialog.h"
 
-listDialog::listDialog(QWidget *parent, QString skillName, int courseId)
+listMaterialDialog::listMaterialDialog(QWidget *parent, QString skillName, int courseId)
     : QDialog(parent)
 {
 	label       = new QLabel(tr("List  of Material ")+skillName);
