@@ -163,6 +163,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\listCourseDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\listMaterialDialog.cpp"
 				>
 			</File>
@@ -183,6 +187,32 @@
 			<File
 				RelativePath=".\database.h"
 				>
+			</File>
+			<File
+				RelativePath=".\listCourseDialog.h"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description=""
+						CommandLine=""
+						AdditionalDependencies=""
+						Outputs=""
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description=""
+						CommandLine=""
+						AdditionalDependencies=""
+						Outputs=""
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\listMaterialDialog.h"

@@ -8,6 +8,7 @@
 #include <QInputDialog>
 #include <QSignalMapper>
 #include "listMaterialDialog.h"
+#include "listCourseDialog.h"
 #include "ui_myclass.h"
 #include "database.h"
 
@@ -351,7 +352,6 @@ public:
 			QObject::connect(signalMapper, SIGNAL(mapped(QString)),this, SLOT(loadDialogAction(QString)));			
 			ui.listCourseTable->setIndexWidget(listCourseModel->index(i,2),detailButton);
 
-
 			QPushButton *editButton = new QPushButton("Edit");
 			QPixmap pixmap("Resources/edit.jpg");
 			QIcon ButtonIcon(pixmap);
@@ -427,7 +427,6 @@ private:
 					ui.leftWidget->addItem(text);
 		}
 
-		
 		void left2RightAction()
 		{
 			ui.rightWidget->addItem(ui.leftWidget->takeItem(ui.leftWidget->currentRow()));
@@ -533,7 +532,9 @@ private:
 	private slots:
 		void loadDialogAction(QString courseId)
 		{
-			int a = 0;
+			listCourseDialog *courseDialog = new listCourseDialog(this,courseId);
+			courseDialog->exec();
+			
 		}
 
 		void editCourseAction(QString courseId)
