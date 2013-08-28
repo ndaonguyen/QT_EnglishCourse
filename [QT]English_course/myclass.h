@@ -22,11 +22,9 @@ private:
 	int courseID;
 	QList<QString> skillsCourse;
 	QList<QListWidget *> skillWidgets;
-	bool step1;
-	bool step2;
-	bool step3;	
 public:
 	//  START :ADD COURSE TAB
+			/* STEP 1 - 2 : CLICK BUTTON1 SAVE */
 	void fillDataStep2()
 	{
 		// update info to ListWidget of step 2			
@@ -41,6 +39,48 @@ public:
 			}			
 		}
 	}
+	void setup4Step2(QString method,int courseId = 0 ) // Main step 2 
+	{
+		/**
+		**	@parameter: method: "EDIT" or "CREATE"
+		**              courseId : if, edit --> choose CourseId
+		*/
+		ui.step1Widget->setEnabled(false);
+		courseName = ui.courseNameLineEdit->text();
+		courseID = database::course_saveAction(conn,courseName);
+
+		fillDataStep2();
+		ui.step2Widget->setVisible(true);
+		ui.line1_2->setVisible(true);
+
+		// info is updated to info box
+		QLabel *courseLabel = new QLabel(ui.classInsertGroupBox);
+		courseLabel->setText("<b>Course name:</b>");
+		ui.step1Layout->addWidget(courseLabel);
+
+		QLabel *courseNameShow = new QLabel(ui.classInsertGroupBox);
+		courseNameShow->setText(courseName);
+		ui.step1Layout->addWidget(courseNameShow);
+
+		ui.resultLabel->setText("<span style='color:red'>Step 1: saved</span>");
+	}
+			/* END STEP 1 - 2  */
+
+			/* START STEP 2 - 3 CLICK BUTTON2 SAVE */
+
+	void saveCourseSKillTable(int numElementSkillBox)
+	{
+		//save to course_skill table
+		for(int i = 0;i<numElementSkillBox;i++)
+		{
+			QString skill = ui.rightWidget->item(i)->text();
+			MYSQL_ROW row = database::skill_searchName(conn,skill);
+			QString skillIdTemp = row[0];
+			int skillId = skillIdTemp.toInt();
+			database::courseSkill_saveAction(conn,skillId,courseID);
+		}
+	}
+
 	void setupStep3Add(int numElementSkillBox) 
 	{
 		QWidget *verticalLayoutWidget;
@@ -122,6 +162,24 @@ public:
 			skillWidgets.append(listSkill);
 		}
 	}
+	void setup4Step3(QString method,int courseId = 0, int numElement =0 ) // Main step 3 
+	{
+		//save to course_skill table
+		saveCourseSKillTable(numElement);
+		//set up What appear in info added box
+		setupStep3Add(numElement);	
+		ui.line2_3->setVisible(true);
+		ui.step3Widget->setVisible(true);
+		ui.step2Widget->setEnabled(false);
+		//set up what show in info box
+		ui.skillLabelShow->setVisible(true);
+		setupInfoBoxStep2Save(numElement);
+		
+		ui.resultLabel->setText("<span style='color:blue'>Step 2: saved</span>");
+	}
+			/* END STEP 2 - 3 CLICK BUTTON2 SAVE */
+
+
 	QString materialBox(QString skill,bool &ok)
 	{
 		QString text = QInputDialog::getText(this, tr("Add Material to ") + skill,tr("Material:"), QLineEdit::Normal, tr("try try"),&ok);
@@ -179,28 +237,32 @@ public:
 private:
 	Ui::MyClassClass ui;
 	// ADD COURSE TAB
-	private slots:
-		void listMaterial(QString skill)
+	private slots:		
+		// START STEP 1 action
+		void step1SaveAction() // disable step 1, enable step 2, update info to info box
 		{
-			int a = 0;		
-			listDialog *b = new listDialog(this,skill);
-			b->exec();
-			int c = 1;
-		}
-
-		void addMaterial(QString skillNIdNCourseId)
-		{			
-		/**
-		**	@parameter: skillNID : "<skill>,<id>"
-		**/		
-			bool isAdd = isAddMaterial(skillNIdNCourseId);
-			while(isAdd ==true)
+			// check box name is empty
+			if(ui.courseNameLineEdit->text().trimmed() == "")
 			{
-				isAdd = isAddMaterial(skillNIdNCourseId);
+				QMessageBox::warning(this,tr("Course name"),tr("Please fill the blank!!"));
+				ui.courseNameLineEdit->setFocus();
+				return;
 			}
-			
+			setup4Step2("CREATE",0 );
 		}
-
+		// END STEP 1 action
+			
+		// START STEP2 2 action
+		void step2SaveAction() // save value to skillsCourse, fill step 3 info, step 3 appear, fill info into info bo
+		{
+			int numElement = ui.rightWidget->count();
+			if(numElement == 0)
+			{
+				QMessageBox::warning(this,tr("Skill choice"),tr("Please choose skills!!"));
+				return;
+			}
+			setup4Step3("CREATE",0, numElement );
+		}
 		void addSkillAction()
 		{
 			bool ok;
@@ -211,64 +273,6 @@ private:
 					ui.leftWidget->addItem(text);
 		}
 
-		void step1SaveAction() // disable step 1, enable step 2, update info to info box
-		{
-			// check box name is empty
-			if(ui.courseNameLineEdit->text().trimmed() == "")
-			{
-				QMessageBox::warning(this,tr("Course name"),tr("Please fill the blank!!"));
-				ui.courseNameLineEdit->setFocus();
-				return;
-			}
-			ui.step1Widget->setEnabled(false);
-			courseName = ui.courseNameLineEdit->text();
-			courseID = database::course_saveAction(conn,courseName);
-			step1 = true;
-
-			fillDataStep2();
-			ui.step2Widget->setVisible(true);
-			ui.line1_2->setVisible(true);
-
-			// info is updated to info box
-			QLabel *courseLabel = new QLabel(ui.classInsertGroupBox);
-			courseLabel->setText("<b>Course name:</b>");
-			ui.step1Layout->addWidget(courseLabel);
-
-			QLabel *courseNameShow = new QLabel(ui.classInsertGroupBox);
-			courseNameShow->setText(courseName);
-			ui.step1Layout->addWidget(courseNameShow);
-		}
-
-		void step2SaveAction() // save value to skillsCourse, fill step 3 info, step 3 appear, fill info into info bo
-		{
-			int numElement = ui.rightWidget->count();
-			if(numElement == 0)
-			{
-				QMessageBox::warning(this,tr("Skill choice"),tr("Please choose skills!!"));
-				return;
-			}
-			//save to course_skill table
-			for(int i = 0;i<numElement;i++)
-			{
-				QString skill = ui.rightWidget->item(i)->text();
-				MYSQL_ROW row = database::skill_searchName(conn,skill);
-				QString skillIdTemp = row[0];
-				int skillId = skillIdTemp.toInt();
-				database::courseSkill_saveAction(conn,skillId,courseID);
-			}
-			//set up What appear in info added box
-			setupStep3Add(numElement);	
-			ui.line2_3->setVisible(true);
-			ui.step3Widget->setVisible(true);
-			ui.step2Widget->setEnabled(false);
-			//set up what show in info box
-			ui.skillLabelShow->setVisible(true);
-			setupInfoBoxStep2Save(numElement);
-		}
-		void saveCourseAction()
-		{
-
-		}
 		
 		void left2RightAction()
 		{
@@ -311,7 +315,35 @@ private:
 			QListWidgetItem *item2 = ui.rightWidget->takeItem(ui.rightWidget->currentRow());
 			ui.leftWidget->addItem(item2);
 		}
+		// END STEP 2 action
 
+		//STEP 3 action
+		void listMaterial(QString skill)
+		{
+			int a = 0;		
+			listDialog *b = new listDialog(this,skill);
+			b->exec();
+			int c = 1;
+		}
+
+		void addMaterial(QString skillNIdNCourseId)
+		{			
+		/**
+		**	@parameter: skillNID : "<skill>,<id>"
+		**/		
+			bool isAdd = isAddMaterial(skillNIdNCourseId);
+			while(isAdd ==true)
+			{
+				isAdd = isAddMaterial(skillNIdNCourseId);
+			}
+			
+		}
+		// END STEP 3 action
+		
+		void saveCourseAction()
+		{
+			// active List Course tab
+		}
 	private slots:
 		// share action
 		void openFileAction()

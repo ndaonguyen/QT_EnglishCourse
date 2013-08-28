@@ -13,9 +13,6 @@ MyClass::MyClass(QWidget *parent, Qt::WFlags flags)
 	ui.step3Widget->setVisible(false);
 	ui.skillLabelShow->setVisible(false);
 	conn = database::connectByC();
-	step1 = false;
-	step2 = false;
-	step3 = false;
 	
 
 	model = new QStandardItemModel(this); //2 Rows and 3 Columns
