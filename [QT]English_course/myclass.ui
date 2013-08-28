@@ -14,7 +14,7 @@
    <string>MyClass</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QTabWidget" name="listCourseTab">
+   <widget class="QTabWidget" name="mainTab">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -27,7 +27,7 @@
      <string/>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="listTab">
      <attribute name="title">
@@ -154,7 +154,7 @@
         <bool>true</bool>
        </property>
        <property name="text">
-        <string>Back to Home</string>
+        <string>Back to List </string>
        </property>
       </widget>
      </widget>

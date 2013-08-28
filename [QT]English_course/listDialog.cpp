@@ -1,7 +1,7 @@
 #include <QtGui>
 #include "listDialog.h"
 
-listDialog::listDialog(QWidget *parent, QString skillName)
+listDialog::listDialog(QWidget *parent, QString skillName, int courseId)
     : QDialog(parent)
 {
 	label       = new QLabel(tr("List  of Material ")+skillName);
@@ -11,7 +11,7 @@ listDialog::listDialog(QWidget *parent, QString skillName)
 	if (skillRow)
 	{
 		int skillId = atoi(skillRow[0]);
-		MYSQL_RES* res_set =  database::skillMaterial_searchSkillId(conn,skillId);
+		MYSQL_RES* res_set =  database::skillMaterial_searchSkillId(conn,skillId,courseId);
 		MYSQL_ROW row;
 		while(row = mysql_fetch_row(res_set))
 		{

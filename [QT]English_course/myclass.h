@@ -39,7 +39,7 @@ public:
 			}			
 		}
 	}
-	void setup4Step2(QString method,int courseId = 0 ) // Main step 2 
+	void setup4Step2(QString method,int courseId) // Main step 2 
 	{
 		/**
 		**	@parameter: method: "EDIT" or "CREATE"
@@ -162,7 +162,7 @@ public:
 			skillWidgets.append(listSkill);
 		}
 	}
-	void setup4Step3(QString method,int courseId = 0, int numElement =0 ) // Main step 3 
+	void setup4Step3(QString method,int courseId, int numElement) // Main step 3 
 	{
 		//save to course_skill table
 		saveCourseSKillTable(numElement);
@@ -332,7 +332,7 @@ private:
 		void listMaterial(QString skill)
 		{
 			int a = 0;		
-			listDialog *b = new listDialog(this,skill);
+			listDialog *b = new listDialog(this,skill,courseID);
 			b->exec();
 			int c = 1;
 		}
@@ -354,6 +354,8 @@ private:
 		void saveCourseAction()
 		{
 			// active List Course tab
+			QWidget * tab = ui.mainTab->widget(2);
+			ui.mainTab->setCurrentWidget(tab);
 		}
 	private slots:
 		// share action

@@ -213,7 +213,7 @@ public:
 		return -1;
 	}
 
-	static MYSQL_RES* skillMaterial_searchSkillId(MYSQL *connect, int skillId)
+	static MYSQL_RES* skillMaterial_searchSkillId(MYSQL *connect, int skillId,int courseId)
 	{
 		/**
 		** @parameter: skill id
@@ -223,8 +223,10 @@ public:
 //		MYSQL_ROW *row ;
 		char bufferId[5];
 		itoa(skillId,bufferId,10);
+		char bufferCourseId[5];
+		itoa(courseId,bufferCourseId,10);
 
-		QString tem = "SELECT * FROM `english_course`.`skill_material` WHERE `skill_id` = '"+QString::fromUtf8(bufferId)+"'";			
+		QString tem = "SELECT * FROM `english_course`.`skill_material` WHERE `skill_id` = '"+QString::fromUtf8(bufferId)+"' AND `course_id`='"+  QString::fromUtf8(bufferCourseId)+"'";			
 		std::string temp1 = tem.toStdString();
 		const char* temp2 = temp1.c_str();
 		if(mysql_query(connect,temp2) ==0)

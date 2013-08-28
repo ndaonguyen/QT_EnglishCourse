@@ -9,7 +9,7 @@ class listDialog : public QDialog
 {
     Q_OBJECT
 public:
-    listDialog(QWidget *parent = 0, QString skillName=NULL);
+    listDialog(QWidget *parent = 0, QString skillName = "",int courseId=0);
 
 private:
     QLabel *label;
