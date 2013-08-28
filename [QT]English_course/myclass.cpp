@@ -7,6 +7,22 @@ MyClass::MyClass(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags)
 {
 	ui.setupUi(this);
+	QSignalMapper *signalMapper = new QSignalMapper(this);
+	signalMapper->setMapping(ui.saveButton,0);
+	QObject::connect(ui.saveButton,SIGNAL(clicked()),signalMapper, SLOT(map()));
+	QObject::connect(signalMapper, SIGNAL(mapped(int)),this, SLOT(step1SaveAction(int)));
+
+	QSignalMapper *signalMapper1 = new QSignalMapper(this);
+	signalMapper1->setMapping(ui.courseNameLineEdit,0);
+	QObject::connect(ui.courseNameLineEdit,SIGNAL(returnPressed()),signalMapper1, SLOT(map()));
+	QObject::connect(signalMapper1, SIGNAL(mapped(int)),this, SLOT(step1SaveAction(int)));
+ 
+	QSignalMapper *signalMapper2 = new QSignalMapper(this);
+	signalMapper2->setMapping(ui.saveButton2,0);
+	QObject::connect(ui.saveButton2,SIGNAL(clicked()),signalMapper2, SLOT(map()));
+	QObject::connect(signalMapper2, SIGNAL(mapped(int)),this, SLOT(step2SaveAction(int)));
+
+	ui.saveCourseButton->setVisible(false);
 	ui.line1_2->setVisible(false);
 	ui.line2_3->setVisible(false);
 	ui.step2Widget->setVisible(false);

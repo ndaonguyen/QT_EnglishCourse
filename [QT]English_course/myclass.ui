@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>917</width>
-    <height>705</height>
+    <height>782</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MyClass</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QTabWidget" name="tabWidget">
+   <widget class="QTabWidget" name="listCourseTab">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -24,10 +24,10 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>Add class</string>
+     <string/>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="listTab">
      <attribute name="title">
@@ -70,6 +70,11 @@
     <widget class="QWidget" name="addClassTab">
      <attribute name="title">
       <string>Add class</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>List Course</string>
      </attribute>
     </widget>
     <widget class="QWidget" name="addCourseTab">
@@ -617,38 +622,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>saveButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MyClassClass</receiver>
-   <slot>step1SaveAction()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>471</x>
-     <y>137</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>460</x>
-     <y>562</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>saveButton2</sender>
-   <signal>clicked()</signal>
-   <receiver>MyClassClass</receiver>
-   <slot>step2SaveAction()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>456</x>
-     <y>247</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>529</x>
-     <y>676</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>left2RightButton</sender>
    <signal>clicked()</signal>
    <receiver>MyClassClass</receiver>
@@ -671,7 +644,7 @@
    <slot>right2LeftAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>273</x>
+     <x>295</x>
      <y>309</y>
     </hint>
     <hint type="destinationlabel">
@@ -735,44 +708,12 @@
    <slot>right2LeftClickAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>348</x>
-     <y>287</y>
+     <x>370</x>
+     <y>364</y>
     </hint>
     <hint type="destinationlabel">
      <x>51</x>
      <y>676</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>addSkill</sender>
-   <signal>clicked()</signal>
-   <receiver>MyClassClass</receiver>
-   <slot>addSkillAction()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>415</x>
-     <y>247</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>636</x>
-     <y>676</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>courseNameLineEdit</sender>
-   <signal>returnPressed()</signal>
-   <receiver>MyClassClass</receiver>
-   <slot>step1SaveAction()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>308</x>
-     <y>166</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>502</x>
-     <y>675</y>
     </hint>
    </hints>
   </connection>
@@ -792,6 +733,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>addSkill</sender>
+   <signal>clicked()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>addSkillAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>415</x>
+     <y>247</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>636</x>
+     <y>676</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openFileAction()</slot>
@@ -799,8 +756,6 @@
   <slot>editAction()</slot>
   <slot>deleteAction()</slot>
   <slot>createAction()</slot>
-  <slot>step1SaveAction()</slot>
-  <slot>step2SaveAction()</slot>
   <slot>step3SaveAction()</slot>
   <slot>left2RightAction()</slot>
   <slot>right2LeftAction()</slot>

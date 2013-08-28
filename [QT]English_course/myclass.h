@@ -25,7 +25,7 @@ private:
 public:
 	//  START :ADD COURSE TAB
 			/* STEP 1 - 2 : CLICK BUTTON1 SAVE */
-	void fillDataStep2()
+	void fillDataStep2() //edit + create
 	{
 		// update info to ListWidget of step 2			
 		if(mysql_query(conn,"select * from  `english_course`.`skill`") ==0)
@@ -176,6 +176,7 @@ public:
 		setupInfoBoxStep2Save(numElement);
 		
 		ui.resultLabel->setText("<span style='color:blue'>Step 2: saved</span>");
+		ui.saveCourseButton->setVisible(true);
 	}
 			/* END STEP 2 - 3 CLICK BUTTON2 SAVE */
 
@@ -239,7 +240,7 @@ private:
 	// ADD COURSE TAB
 	private slots:		
 		// START STEP 1 action
-		void step1SaveAction() // disable step 1, enable step 2, update info to info box
+		void step1SaveAction(int courseId) // disable step 1, enable step 2, update info to info box
 		{
 			// check box name is empty
 			if(ui.courseNameLineEdit->text().trimmed() == "")
@@ -248,12 +249,17 @@ private:
 				ui.courseNameLineEdit->setFocus();
 				return;
 			}
-			setup4Step2("CREATE",0 );
+
+			char* method = "CREATE";
+			if ( courseId !=0)
+				method = "EDIT";
+
+			setup4Step2(method,courseId );
 		}
 		// END STEP 1 action
 			
 		// START STEP2 2 action
-		void step2SaveAction() // save value to skillsCourse, fill step 3 info, step 3 appear, fill info into info bo
+		void step2SaveAction(int courseId) // save value to skillsCourse, fill step 3 info, step 3 appear, fill info into info bo
 		{
 			int numElement = ui.rightWidget->count();
 			if(numElement == 0)
@@ -261,7 +267,12 @@ private:
 				QMessageBox::warning(this,tr("Skill choice"),tr("Please choose skills!!"));
 				return;
 			}
-			setup4Step3("CREATE",0, numElement );
+			
+			char* method = "CREATE";
+			if ( courseId !=0)
+				method = "EDIT";
+
+			setup4Step3(method,courseId,numElement );
 		}
 		void addSkillAction()
 		{
