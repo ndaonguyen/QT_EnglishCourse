@@ -24,12 +24,16 @@ private:
 	int courseID;
 	QList<QString> skillsCourse;
 	QList<QListWidget *> skillWidgets;
+
+	int numExecuteStep2;
+	int numExecuteStep3;
 public:
 	//  START :ADD COURSE TAB
 			/* STEP 1 - 2 : CLICK BUTTON1 SAVE */
 	void fillDataStep2() //edit + create
 	{
-		// update info to ListWidget of step 2			
+		// update info to ListWidget of step 2	
+		int count = ui.leftWidget->count();
 		if(mysql_query(conn,"select * from  `english_course`.`skill`") ==0)
 		{
 			MYSQL_RES *res;
@@ -52,8 +56,9 @@ public:
 		courseID = database::course_saveAction(conn,courseName);
 
 		fillDataStep2();
-		ui.step2Widget->setVisible(true);
 		ui.line1_2->setVisible(true);
+		int count = ui.leftWidget->count();
+		ui.step2Widget->setVisible(true);
 
 		// info is updated to info box
 		QLabel *courseLabel = new QLabel(ui.classInsertGroupBox);
@@ -64,7 +69,8 @@ public:
 		courseNameShow->setText(courseName);
 		ui.step1Layout->addWidget(courseNameShow);
 
-		ui.resultLabel->setText("<span style='color:red'>Step 1: saved</span>");
+		ui.resultLabel->setText("<span style='color:red'><b>Step1:Saved</b></span>");
+		return;
 	}
 			/* END STEP 1 - 2  */
 
@@ -85,24 +91,24 @@ public:
 
 	void setupStep3Add(int numElementSkillBox) 
 	{
-		QWidget *verticalLayoutWidget;
-		QVBoxLayout *verticalLayout;			
+	//	QWidget *verticalLayoutWidget;
+	//	QVBoxLayout *verticalLayout;			
 		QHBoxLayout *horizontalLayout_2;
 
-		verticalLayoutWidget = new QWidget(ui.step3Widget);
-		verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
+	//	verticalLayoutWidget = new QWidget(ui.step3Widget);
+	//	verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
 	
-		QRect rectLayoutSkill = ui.step3Widget->geometry();
-		int xMargin = 100;
-		int yMargin = 20;
+	//	QRect rectLayoutSkill = ui.step3Widget->geometry();
+	//	int xMargin = 100;
+	//	int yMargin = 20;
 //		verticalLayoutWidget->setGeometry(QRect(rectLayoutSkill.x()+xMargin,rectLayoutSkill.y()+yMargin,rectLayoutSkill.width() - yMargin, rectLayoutSkill.height() - xMargin));
 		
-		verticalLayoutWidget->setGeometry(QRect(30, 40, 321, 201));
-		verticalLayout = new QVBoxLayout(verticalLayoutWidget);
-		verticalLayout->setSpacing(6);
-		verticalLayout->setContentsMargins(11, 11, 11, 11);
-		verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-		verticalLayout->setContentsMargins(0, 0, 0, 0);
+	//	verticalLayoutWidget->setGeometry(QRect(30, 40, 321, 201));
+	//	verticalLayout = new QVBoxLayout(verticalLayoutWidget);
+	//	verticalLayout->setSpacing(6);
+	//	verticalLayout->setContentsMargins(11, 11, 11, 11);
+	//	verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+	//	verticalLayout->setContentsMargins(0, 0, 0, 0);
 		
 		for( int i =0;i<numElementSkillBox;i++)
 		{
@@ -113,16 +119,16 @@ public:
 			skillsCourse.append(skill);
 
 			QLabel *skillLabel = new QLabel("<b>"+skill+"</b>");
-			verticalLayout->addWidget(skillLabel);
+			ui.verticalLayout->addWidget(skillLabel);
 
 			horizontalLayout_2 = new QHBoxLayout();
 			horizontalLayout_2->setSpacing(6);
 			horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
 
-			QLabel *temp = new QLabel(verticalLayoutWidget);
+			QLabel *temp = new QLabel(ui.verticalLayoutWidget);
 			horizontalLayout_2->addWidget(temp);
 
-			QPushButton *addButton = new QPushButton(verticalLayoutWidget);
+			QPushButton *addButton = new QPushButton(ui.verticalLayoutWidget);
 			addButton->setText("Add material");
 			horizontalLayout_2->addWidget(addButton);
 			addButton->setObjectName(QString::fromUtf8("addMaterialButton")+QString::number(i));
@@ -131,7 +137,7 @@ public:
 			connect(signalMapper, SIGNAL(mapped(QString)),this, SLOT(addMaterial(QString)));
 
 
-			QPushButton *listButton  = new QPushButton(verticalLayoutWidget);
+			QPushButton *listButton  = new QPushButton(ui.verticalLayoutWidget);
 			listButton->setText("List materials");
 			horizontalLayout_2->addWidget(listButton);
 			listButton->setObjectName(QString::fromUtf8("listMaterialButton")+QString::number(i));
@@ -140,14 +146,14 @@ public:
 			connect(listButton,SIGNAL(clicked()),signalMapper1, SLOT(map()));
 			connect(signalMapper1, SIGNAL(mapped(QString)),this, SLOT(listMaterial(QString)));
 
-			QLabel *temp1 = new QLabel(verticalLayoutWidget);
+			QLabel *temp1 = new QLabel(ui.verticalLayoutWidget);
 			horizontalLayout_2->addWidget(temp1);
 
-			verticalLayout->addLayout(horizontalLayout_2);
+			ui.verticalLayout->addLayout(horizontalLayout_2);
 
 		}
-		verticalLayoutWidget->raise();
-		verticalLayoutWidget->show();
+	//	verticalLayoutWidget->raise();
+	//	verticalLayoutWidget->show();
 	}
 
 	void setupInfoBoxStep2Save(int numElementBoxSkill)
@@ -177,8 +183,9 @@ public:
 		ui.skillLabelShow->setVisible(true);
 		setupInfoBoxStep2Save(numElement);
 		
-		ui.resultLabel->setText("<span style='color:blue'>Step 2: saved</span>");
+		ui.resultLabel->setText("<span style='color:blue'><b>Step2:saved</b></span>");
 		ui.saveCourseButton->setVisible(true);
+		numExecuteStep3 = numExecuteStep3 +1;
 	}
 			/* END STEP 2 - 3 CLICK BUTTON2 SAVE */
 
@@ -254,6 +261,53 @@ public:
 		ui.step2Widget->setVisible(false);
 		ui.step3Widget->setVisible(false);
 		ui.skillLabelShow->setVisible(false);
+		ui.addMoreButton->setVisible(false);
+
+		numExecuteStep2 = 0;
+		numExecuteStep3 = 0;
+	}
+	void clearItemsLayout(QLayout* layout)
+	{
+		while(QLayoutItem *item = layout->takeAt(0))
+			if (item->layout()) 
+			{
+				clearItemsLayout(item->layout());
+				delete item->layout();
+			}
+			else if (item->widget()) 
+				delete item->widget();
+	}
+
+
+	void refreshToOrigin()
+	{
+		loadConfigAddCourseTab();
+
+		ui.courseNameLineEdit->setText("");
+		ui.step1Widget->setEnabled(true);
+		ui.step2Widget->setEnabled(true);
+		ui.resultLabel->setText("");
+		ui.skillLabelShow->setVisible(false);
+
+		clearItemsLayout(ui.step1Layout);
+		clearItemsLayout(ui.step2Layout);
+		//step 3
+		clearItemsLayout(ui.verticalLayout);
+
+		//step 2 
+		numExecuteStep2 = 0;
+		numExecuteStep3 = 0;
+		int numLeft  = ui.leftWidget->count();
+		int numRight = ui.rightWidget->count();
+		for (int i =0;i<numLeft;i++)
+			ui.leftWidget->takeItem(0);
+		for (int i =0;i<numRight;i++)
+			ui.rightWidget->takeItem(0);
+
+		courseName = "";
+		courseID = 0;
+		skillsCourse.clear();
+		skillWidgets.clear();
 	}
 	//  END :ADD COURSE TAB
 
@@ -381,10 +435,21 @@ public:
 private:
 	Ui::MyClassClass ui;
 	// ADD COURSE TAB
-	private slots:		
+	private slots:	
+		// START refresh (add more action)
+		void refreshAddCourseAction()
+		{
+			refreshToOrigin();
+		}
+		// END refresh (add more action)
+
+
 		// START STEP 1 action
 		void step1SaveAction(int courseId) // disable step 1, enable step 2, update info to info box
 		{
+			if (numExecuteStep2 >0)
+				return;
+
 			// check box name is empty
 			if(ui.courseNameLineEdit->text().trimmed() == "")
 			{
@@ -398,12 +463,17 @@ private:
 				method = "EDIT";
 
 			setup4Step2(method,courseId );
+			numExecuteStep2 = numExecuteStep2+1;
+			return;
 		}
 		// END STEP 1 action
 			
 		// START STEP2 2 action
 		void step2SaveAction(int courseId) // save value to skillsCourse, fill step 3 info, step 3 appear, fill info into info bo
 		{
+			if (numExecuteStep3 >0)
+				return;
+
 			int numElement = ui.rightWidget->count();
 			if(numElement == 0)
 			{
@@ -416,6 +486,7 @@ private:
 				method = "EDIT";
 
 			setup4Step3(method,courseId,numElement );
+			ui.addMoreButton->setVisible(true);
 		}
 		void addSkillAction()
 		{
@@ -488,8 +559,8 @@ private:
 			while(isAdd ==true)
 			{
 				isAdd = isAddMaterial(skillNIdNCourseId);
+				ui.resultLabel->setText("<span style='color:green'><b>Material: saved</b></span>");
 			}
-			
 		}
 		// END STEP 3 action
 		
@@ -499,6 +570,7 @@ private:
 			QWidget * tab = ui.mainTab->widget(2);
 			ui.mainTab->setCurrentWidget(tab);
 			// load course list
+			loadListCourseTab();
 		}
 	private slots:
 		// share action
@@ -534,18 +606,64 @@ private:
 		{
 			listCourseDialog *courseDialog = new listCourseDialog(this,courseId);
 			courseDialog->exec();
-			
 		}
 
 		void editCourseAction(QString courseId)
 		{
 			int a = 0;
+			QWidget * tab = ui.mainTab->widget(3);
+			ui.mainTab->setCurrentWidget(tab);
+
 		}
 
 		void deleteCourseAction(QString courseId)
 		{
-			int a =0;
+		/**
+		** Purpose: Confirm delete action-->delete database first --> delete row in QTableView
+		**/
+			int ret = QMessageBox::warning(this, tr("Delete course"),tr("Please confirm !!"),
+                                QMessageBox::Ok | QMessageBox::Cancel);
 
+			if(ret == QMessageBox::Ok)
+			{
+				//delete database ( children --> parent)
+
+				std::string temp  = courseId.toStdString();
+				const char* temp1 = temp.c_str();
+				int courseIdInt   = atoi(temp1);
+
+				MYSQL_ROW courseRow = database::course_searchId(conn, courseIdInt);
+				QString nameCourse  = courseRow[1];
+				
+				MYSQL_RES *res = database::courseSkill_searchCourseId(conn,courseIdInt);
+				while( MYSQL_ROW courseSkillRow = mysql_fetch_row(res))
+				{
+					QString skillId = courseSkillRow[1];
+					temp  = skillId.toStdString();
+					temp1 = temp.c_str();
+					int skillIdInt   = atoi(temp1);
+					MYSQL_ROW skillRow = database::skill_searchSkillId(conn,skillIdInt);
+
+					MYSQL_RES *resSkillMaterial = database::skillMaterial_searchSkillId(conn,skillIdInt,courseIdInt);
+					while(MYSQL_ROW skillMaterialRow = mysql_fetch_row(resSkillMaterial) )
+					{
+						QString materialId = skillMaterialRow[1];
+						temp  = materialId.toStdString();
+						temp1 = temp.c_str();
+						int materialIdInt  = atoi(temp1);
+						database::material_deleteById(conn,materialIdInt);
+						database::skillMaterial_deleteByMaterialId(conn,materialIdInt);
+					}
+					database::courseSkill_deleteBySkillId(conn,skillIdInt);
+				}
+				database::course_deleteBySkillId(conn,courseIdInt);
+			
+				// Delete row of QTableView
+				int rowCount = listCourseModel->rowCount();
+				for(int i =0; i < rowCount; i++)
+					if(nameCourse == listCourseModel->data(listCourseModel->index(i,0), Qt::DisplayRole).toString())
+						listCourseModel->removeRow(i);
+			}
 		}
 
 };
