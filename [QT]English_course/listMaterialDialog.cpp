@@ -4,21 +4,24 @@
 listMaterialDialog::listMaterialDialog(QWidget *parent, QString skillName, int courseId)
     : QDialog(parent)
 {
+	isChanged = false;
 	conn = database::connectByC();
 	label      = new QLabel(tr("List  of Material ")+skillName);
 	view = new QTableView;
 	model = new QStandardItemModel(this);
 	view->setModel(model);
-	model->setColumnCount(2);
+	model->setColumnCount(3);
 	view->setColumnWidth(0,30);
-	view->setColumnWidth(1,200);
+	view->setColumnWidth(1,170);
+	view->setColumnWidth(2,30);
 
 	MYSQL* conn = database::connectByC();
 	MYSQL_ROW skillRow = database::skill_searchName(conn,skillName);
 	if (skillRow)
 	{
-		model->setHorizontalHeaderItem(0,new QStandardItem(tr("-")));
+		model->setHorizontalHeaderItem(2,new QStandardItem(tr("-")));
 		model->setHorizontalHeaderItem(1,new QStandardItem(tr("Material")));
+		model->setHorizontalHeaderItem(0,new QStandardItem(tr("Id")));
 
 		int skillId = atoi(skillRow[0]);
 		MYSQL_RES* res_set =  database::skillMaterial_searchSkillId(conn,skillId,courseId);
@@ -42,13 +45,22 @@ listMaterialDialog::listMaterialDialog(QWidget *parent, QString skillName, int c
 
 			QStandardItem *materName = new QStandardItem(material);
 			model->setItem(rowIndex, 1, materName);
-			view->setIndexWidget(model->index(rowIndex,0),button);
+
+			QString maIDStr = row[1];
+			QStandardItem *materialIdItem = new QStandardItem(maIDStr);
+			model->setItem(rowIndex, 0, materialIdItem);
+
+			view->setIndexWidget(model->index(rowIndex,2),button);
 			rowIndex++;
 		}
 	}
 	QVBoxLayout *topLeftLayout = new QVBoxLayout;
 	topLeftLayout->addWidget(label);
 	topLeftLayout->addWidget(view);
+
+	QPushButton *saveButton = new QPushButton("Save");
+	QObject::connect(saveButton,SIGNAL(clicked()),this,SLOT(editMaterialAction()));
+	topLeftLayout->addWidget(saveButton);
 
 	setLayout(topLeftLayout);
 	setWindowTitle(tr("Material list"));

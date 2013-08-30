@@ -53,6 +53,7 @@ public:
     QTableView *listCourseTable;
     QLineEdit *searchCourseLineEdit;
     QPushButton *searchCourseButton;
+    QPushButton *pushButton;
     QWidget *addCourseTab;
     QGroupBox *classInsertGroupBox;
     QWidget *horizontalLayoutWidget;
@@ -141,7 +142,7 @@ public:
         searchLineEdit->setGeometry(QRect(20, 10, 211, 20));
         listTable = new QTableView(listClassTab);
         listTable->setObjectName(QString::fromUtf8("listTable"));
-        listTable->setGeometry(QRect(20, 50, 691, 421));
+        listTable->setGeometry(QRect(20, 50, 691, 541));
         mainTab->addTab(listClassTab, QString());
         addClassTab = new QWidget();
         addClassTab->setObjectName(QString::fromUtf8("addClassTab"));
@@ -150,13 +151,20 @@ public:
         listCourseTab->setObjectName(QString::fromUtf8("listCourseTab"));
         listCourseTable = new QTableView(listCourseTab);
         listCourseTable->setObjectName(QString::fromUtf8("listCourseTable"));
-        listCourseTable->setGeometry(QRect(10, 50, 671, 471));
+        listCourseTable->setGeometry(QRect(10, 50, 671, 541));
         searchCourseLineEdit = new QLineEdit(listCourseTab);
         searchCourseLineEdit->setObjectName(QString::fromUtf8("searchCourseLineEdit"));
         searchCourseLineEdit->setGeometry(QRect(10, 10, 201, 21));
         searchCourseButton = new QPushButton(listCourseTab);
         searchCourseButton->setObjectName(QString::fromUtf8("searchCourseButton"));
         searchCourseButton->setGeometry(QRect(220, 10, 75, 23));
+        pushButton = new QPushButton(listCourseTab);
+        pushButton->setObjectName(QString::fromUtf8("pushButton"));
+        pushButton->setGeometry(QRect(690, 0, 61, 51));
+        QIcon icon5;
+        icon5.addFile(QString::fromUtf8(":/MyClass/Resources/refresh_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton->setIcon(icon5);
+        pushButton->setIconSize(QSize(40, 40));
         mainTab->addTab(listCourseTab, QString());
         addCourseTab = new QWidget();
         addCourseTab->setObjectName(QString::fromUtf8("addCourseTab"));
@@ -204,9 +212,9 @@ public:
         saveButton = new QPushButton(step1Widget);
         saveButton->setObjectName(QString::fromUtf8("saveButton"));
         saveButton->setGeometry(QRect(340, 0, 41, 31));
-        QIcon icon5;
-        icon5.addFile(QString::fromUtf8(":/MyClass/Resources/saveButtton.jpg"), QSize(), QIcon::Normal, QIcon::Off);
-        saveButton->setIcon(icon5);
+        QIcon icon6;
+        icon6.addFile(QString::fromUtf8(":/MyClass/Resources/saveButtton.jpg"), QSize(), QIcon::Normal, QIcon::Off);
+        saveButton->setIcon(icon6);
         saveButton->setIconSize(QSize(18, 18));
         step2Widget = new QWidget(addCourseTab);
         step2Widget->setObjectName(QString::fromUtf8("step2Widget"));
@@ -235,14 +243,14 @@ public:
         saveButton2 = new QPushButton(step2Widget);
         saveButton2->setObjectName(QString::fromUtf8("saveButton2"));
         saveButton2->setGeometry(QRect(340, 0, 41, 31));
-        saveButton2->setIcon(icon5);
+        saveButton2->setIcon(icon6);
         saveButton2->setIconSize(QSize(18, 18));
         addSkill = new QPushButton(step2Widget);
         addSkill->setObjectName(QString::fromUtf8("addSkill"));
         addSkill->setGeometry(QRect(260, 0, 75, 31));
-        QIcon icon6;
-        icon6.addFile(QString::fromUtf8(":/MyClass/Resources/add-icon.png"), QSize(), QIcon::Normal, QIcon::Off);
-        addSkill->setIcon(icon6);
+        QIcon icon7;
+        icon7.addFile(QString::fromUtf8(":/MyClass/Resources/add-icon.png"), QSize(), QIcon::Normal, QIcon::Off);
+        addSkill->setIcon(icon7);
         addSkill->setIconSize(QSize(18, 18));
         label = new QLabel(step2Widget);
         label->setObjectName(QString::fromUtf8("label"));
@@ -279,13 +287,13 @@ public:
         line2_3->setFrameShadow(QFrame::Sunken);
         resultLabel = new QLabel(addCourseTab);
         resultLabel->setObjectName(QString::fromUtf8("resultLabel"));
-        resultLabel->setGeometry(QRect(0, 120, 91, 41));
+        resultLabel->setGeometry(QRect(0, 240, 91, 41));
         addMoreButton = new QPushButton(addCourseTab);
         addMoreButton->setObjectName(QString::fromUtf8("addMoreButton"));
-        addMoreButton->setGeometry(QRect(10, 20, 71, 71));
-        QIcon icon7;
-        icon7.addFile(QString::fromUtf8(":/MyClass/Resources/addIcon.jpg"), QSize(), QIcon::Normal, QIcon::Off);
-        addMoreButton->setIcon(icon7);
+        addMoreButton->setGeometry(QRect(10, 120, 71, 71));
+        QIcon icon8;
+        icon8.addFile(QString::fromUtf8(":/MyClass/Resources/addIcon.jpg"), QSize(), QIcon::Normal, QIcon::Off);
+        addMoreButton->setIcon(icon8);
         addMoreButton->setIconSize(QSize(60, 60));
         mainTab->addTab(addCourseTab, QString());
         MyClassClass->setCentralWidget(centralWidget);
@@ -324,6 +332,7 @@ public:
         QObject::connect(saveCourseButton, SIGNAL(clicked()), MyClassClass, SLOT(saveCourseAction()));
         QObject::connect(addSkill, SIGNAL(clicked()), MyClassClass, SLOT(addSkillAction()));
         QObject::connect(addMoreButton, SIGNAL(clicked()), MyClassClass, SLOT(refreshAddCourseAction()));
+        QObject::connect(pushButton, SIGNAL(clicked()), MyClassClass, SLOT(refreshCourseListAction()));
 
         mainTab->setCurrentIndex(3);
 
@@ -357,13 +366,14 @@ public:
         mainTab->setTabText(mainTab->indexOf(listClassTab), QApplication::translate("MyClassClass", "List class", 0, QApplication::UnicodeUTF8));
         mainTab->setTabText(mainTab->indexOf(addClassTab), QApplication::translate("MyClassClass", "Add class", 0, QApplication::UnicodeUTF8));
         searchCourseButton->setText(QApplication::translate("MyClassClass", "Search", 0, QApplication::UnicodeUTF8));
+        pushButton->setText(QString());
         mainTab->setTabText(mainTab->indexOf(listCourseTab), QApplication::translate("MyClassClass", "List Course", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         classInsertGroupBox->setToolTip(QApplication::translate("MyClassClass", "Add skills", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
         classInsertGroupBox->setTitle(QApplication::translate("MyClassClass", "Info inserted :", 0, QApplication::UnicodeUTF8));
         skillLabelShow->setText(QApplication::translate("MyClassClass", "<html><head/><body><p><span style=\" font-weight:600;\">Skills:</span></p></body></html>", 0, QApplication::UnicodeUTF8));
-        saveCourseButton->setText(QApplication::translate("MyClassClass", "Save and Back to List ", 0, QApplication::UnicodeUTF8));
+        saveCourseButton->setText(QApplication::translate("MyClassClass", "FINISH   !!!", 0, QApplication::UnicodeUTF8));
         step1Label->setText(QApplication::translate("MyClassClass", "<html><head/><body><p><span style=\" font-weight:600;\">Step 1 :Course name (e.g: Ielts, Toefl,...)</span></p></body></html>", 0, QApplication::UnicodeUTF8));
         setCourseLabel->setText(QApplication::translate("MyClassClass", "Set course name:", 0, QApplication::UnicodeUTF8));
         saveButton->setText(QString());

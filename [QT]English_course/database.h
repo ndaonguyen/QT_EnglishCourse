@@ -129,6 +129,22 @@ public:
 		}
 		return -1;
 	}
+	static int material_editById(MYSQL *connect, int materialId, QString material)
+	{
+		//UPDATE `english_course`.`material` SET `name` = 'edit done' WHERE `material`.`id` =198;
+		char bufferId[5];
+		itoa(materialId,bufferId,10);
+
+		QString query = "UPDATE `english_course`.`material` SET `name` = '"+material+"' WHERE `id` =" + QString::fromUtf8(bufferId);
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			return 1;
+		}
+		return -1;
+	}
+
 	//SKILL TABLE
 	static MYSQL_ROW skill_searchSkillId(MYSQL *connect, int skillId)
 	{

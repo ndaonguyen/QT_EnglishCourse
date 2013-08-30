@@ -124,8 +124,7 @@ public:
 			listButton->setText("List materials");
 			horizontalLayout_2->addWidget(listButton);
 			listButton->setObjectName(QString::fromUtf8("listMaterialButton")+QString::number(i));
-
-			signalMapper1->setMapping(listButton,skill);
+			signalMapper1->setMapping(listButton,skill+","+QString::number(i)+","+QString::number(courseID));
 			connect(listButton,SIGNAL(clicked()),signalMapper1, SLOT(map()));
 			connect(signalMapper1, SIGNAL(mapped(QString)),this, SLOT(listMaterial(QString)));
 
@@ -153,18 +152,18 @@ public:
 			skillWidgets.append(listSkill);
 		}
 	}
-	void setup4Step3(QString method,int courseId, int numElement) // Main step 3 
+	void setup4Step3(QString method,int courseId, int numSkills) // Main step 3 
 	{
 		//save to course_skill table
-		saveCourseSKillTable(numElement);
+		saveCourseSKillTable(numSkills);
 		//set up What appear in info added box
-		setupStep3Add(numElement);	
+		setupStep3Add(numSkills);	
 		ui.line2_3->setVisible(true);
 		ui.step3Widget->setVisible(true);
 		ui.step2Widget->setEnabled(false);
 		//set up what show in info box
 		ui.skillLabelShow->setVisible(true);
-		setupInfoBoxStep2Save(numElement);
+		setupInfoBoxStep2Save(numSkills);
 		
 		ui.resultLabel->setText("<span style='color:blue'><b>Step2:saved</b></span>");
 		ui.saveCourseButton->setVisible(true);
@@ -179,19 +178,15 @@ public:
 		return text;
 	}
 
-	bool isAddMaterial(QString skillNIdNCourseId)
+	bool isAddMaterial(QString skillNIndex)
 	{
 	/**
-	**	@parameter: skillNID : "<skill>,<id>"
+	**	@parameter: skillNID : "<skill>,<index>,<courseId>"
 	**/			
 		bool ok;
-		QStringList stringlist = skillNIdNCourseId.split(",");
+		QStringList stringlist = skillNIndex.split(",");
 		QString skill = stringlist.at(0);
 		QString index = stringlist.at(1);
-		QString courseId = stringlist.at(2);
-		std::string tempId1 = courseId.toStdString();
-		const char* courseIdTemp = tempId1.c_str();
-
 
 		QString text =  materialBox(skill,ok);
 		int idMaterial = -1;
@@ -205,7 +200,7 @@ public:
 				if(row = database::skill_searchName(conn,skill))
 				{
 					char* idSkill = row[0];
-					idMaterial = database::skillMaterial_saveAction(conn,atoi(idSkill),idMaterial,atoi(courseIdTemp));
+					idMaterial = database::skillMaterial_saveAction(conn,atoi(idSkill),idMaterial,courseID);
 					if(idMaterial!=-1)
 					{
 						//ui.step2WidgetInfo
@@ -524,24 +519,61 @@ private:
 		// END STEP 2 action
 
 		//STEP 3 action
-		void listMaterial(QString skill)
+		void listMaterial(QString skillNIndex)
 		{
-			int a = 0;		
-			listMaterialDialog *b = new listMaterialDialog(this,skill,courseID);
-			b->exec();
+		/**
+		**	@parameter: skillNIndex : "<skill>,<index>" (index: index trong skillWidgets [thu tu skills])
+		**/		
+			QStringList stringlist = skillNIndex.split(",");
+			QString skill = stringlist.at(0);
+			QString index = stringlist.at(1);
+			std::string temp1 = index.toStdString();
+			const char* temp2 = temp1.c_str();
+			int indexInt  = atoi(temp2);
+
+			listMaterialDialog *dialog = new listMaterialDialog(this,skill,courseID);
+			dialog->exec();
+			bool isChange = dialog->isChanged;
+			if(isChange == true)
+			{
+				MYSQL_ROW skillRow = database::skill_searchName(conn,skill);
+				QString skillId    = skillRow[0];
+				temp1              = skillId.toStdString();
+				temp2              = temp1.c_str();
+				int skillIdInt     = atoi(temp2);
+				
+				//Clear old list, and add new list --> Box Info
+				QListWidget *listWidget = skillWidgets.at(indexInt);
+				listWidget->clear();
+
+				MYSQL_RES *res = database::skillMaterial_searchSkillId(conn,skillIdInt,courseID);
+				while(MYSQL_ROW skillMaRow = mysql_fetch_row(res))
+				{
+					QString maId = skillMaRow[1];
+					temp1		 = maId.toStdString();
+					temp2        = temp1.c_str();
+					int maIdInt  = atoi(temp2);
+					MYSQL_ROW materialRow = database::material_searchMaterialId(conn,maIdInt);
+					if(materialRow)
+					{
+						QString ma   = materialRow[1];
+						listWidget->addItem(ma);
+					}
+				}	
+			}
 			int c = 1;
 		}
 
-		void addMaterial(QString skillNIdNCourseId)
+		void addMaterial(QString skillNIndex)
 		{			
 		/**
 		**	@parameter: skillNID : "<skill>,<id>"
 		**/		
-			bool isAdd = isAddMaterial(skillNIdNCourseId);
+			bool isAdd = isAddMaterial(skillNIndex);
 			while(isAdd ==true)
 			{
-				isAdd = isAddMaterial(skillNIdNCourseId);
 				ui.resultLabel->setText("<span style='color:green'><b>Material: saved</b></span>");
+				isAdd = isAddMaterial(skillNIndex);
 			}
 		}
 		// END STEP 3 action
@@ -551,6 +583,7 @@ private:
 			// active List Course tab
 			QWidget * tab = ui.mainTab->widget(2);
 			ui.mainTab->setCurrentWidget(tab);
+			refreshToOrigin();
 			// load course list
 			loadListCourseTab();
 		}
@@ -584,6 +617,12 @@ private:
 		}
 	// LIST COURSE TAB
 	private slots:
+		void refreshCourseListAction()
+		{
+			loadListCourseTab();
+
+		}
+
 		void loadDialogAction(QString courseId)
 		{
 			listCourseDialog *courseDialog = new listCourseDialog(this,courseId);
@@ -593,9 +632,17 @@ private:
 		void editCourseAction(QString courseId)
 		{
 			int a = 0;
+			// Edit info
+
+
+			// Change tab to Course Tab
 			QWidget * tab = ui.mainTab->widget(3);
 			ui.mainTab->setCurrentWidget(tab);
+			ui.mainTab->setTabEnabled(0,false);
+			ui.mainTab->setTabEnabled(1,false);
+			ui.mainTab->setTabEnabled(2,false);
 
+			ui.addMoreButton->setVisible(false);
 		}
 
 		void deleteCourseAction(QString courseId)
