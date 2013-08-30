@@ -91,24 +91,7 @@ public:
 
 	void setupStep3Add(int numElementSkillBox) 
 	{
-	//	QWidget *verticalLayoutWidget;
-	//	QVBoxLayout *verticalLayout;			
 		QHBoxLayout *horizontalLayout_2;
-
-	//	verticalLayoutWidget = new QWidget(ui.step3Widget);
-	//	verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
-	
-	//	QRect rectLayoutSkill = ui.step3Widget->geometry();
-	//	int xMargin = 100;
-	//	int yMargin = 20;
-//		verticalLayoutWidget->setGeometry(QRect(rectLayoutSkill.x()+xMargin,rectLayoutSkill.y()+yMargin,rectLayoutSkill.width() - yMargin, rectLayoutSkill.height() - xMargin));
-		
-	//	verticalLayoutWidget->setGeometry(QRect(30, 40, 321, 201));
-	//	verticalLayout = new QVBoxLayout(verticalLayoutWidget);
-	//	verticalLayout->setSpacing(6);
-	//	verticalLayout->setContentsMargins(11, 11, 11, 11);
-	//	verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-	//	verticalLayout->setContentsMargins(0, 0, 0, 0);
 		
 		for( int i =0;i<numElementSkillBox;i++)
 		{
@@ -375,7 +358,6 @@ public:
 		listCourseModel->setHorizontalHeaderItem(2,new QStandardItem(tr("Material")));
 		listCourseModel->setHorizontalHeaderItem(3,new QStandardItem(tr("Edit")));
 		listCourseModel->setHorizontalHeaderItem(4,new QStandardItem(tr("Delete")));
-	//	ui.listCourseTable->setColumnWidth(3,100);
 
 		MYSQL_RES* res_set = database::course_getAll(conn);
 		MYSQL_ROW row;
