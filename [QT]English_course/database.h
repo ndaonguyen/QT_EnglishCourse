@@ -343,12 +343,24 @@ public:
 		{
 			MYSQL_RES *res_set;
 			res_set = mysql_store_result(connect);
-		//	row     = mysql_fetch_row(res_set);
 			return res_set;
 		}
 		return NULL;
 	}
 
+	static MYSQL_RES* course_searchPartName(MYSQL *connect, QString namePart)
+	{
+		QString query = "SELECT * FROM `english_course`.`course` WHERE `name` LIKE '%"+namePart+"%'";
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			MYSQL_RES *res_set;
+			res_set = mysql_store_result(connect);
+			return res_set;
+		}
+		return NULL;
+	}
 
 	static MYSQL_ROW course_searchName(MYSQL *connect, QString courseName)
 	{

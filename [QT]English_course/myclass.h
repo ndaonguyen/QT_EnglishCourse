@@ -333,18 +333,12 @@ public:
 		return skillString;
 	}
 
-	void loadListCourseTab()
+	void fillListCourse(MYSQL_RES *res_set)
 	{
-		int column = 3;
-		listCourseModel = new QStandardItemModel(ui.listCourseTab);
-		
-		listCourseModel->setHorizontalHeaderItem(0,new QStandardItem(tr("Course Name")));
-		listCourseModel->setHorizontalHeaderItem(1,new QStandardItem(tr("Skill")));
-		listCourseModel->setHorizontalHeaderItem(2,new QStandardItem(tr("Material")));
-		listCourseModel->setHorizontalHeaderItem(3,new QStandardItem(tr("Edit")));
-		listCourseModel->setHorizontalHeaderItem(4,new QStandardItem(tr("Delete")));
-
-		MYSQL_RES* res_set = database::course_getAll(conn);
+	/*
+	** Fill to the next rows of QTableList
+	**
+	*/
 		MYSQL_ROW row;
 		int indexRow =0;
 		QList<QString> courseIdList;
@@ -395,13 +389,28 @@ public:
 		}
 	}
 
+	void loadListCourseTab()
+	{
+		int column = 3;
+		listCourseModel = new QStandardItemModel(ui.listCourseTab);
+		
+		listCourseModel->setHorizontalHeaderItem(0,new QStandardItem(tr("Course Name")));
+		listCourseModel->setHorizontalHeaderItem(1,new QStandardItem(tr("Skill")));
+		listCourseModel->setHorizontalHeaderItem(2,new QStandardItem(tr("Material")));
+		listCourseModel->setHorizontalHeaderItem(3,new QStandardItem(tr("Edit")));
+		listCourseModel->setHorizontalHeaderItem(4,new QStandardItem(tr("Delete")));
+
+		MYSQL_RES* res_set = database::course_getAll(conn);
+		fillListCourse(res_set);
+	}
+
 public:
 	MyClass(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~MyClass();
 
 private:
 	Ui::MyClassClass ui;
-	// ADD COURSE TAB
+// ADD COURSE TAB
 	private slots:	
 		// START refresh (add more action)
 		void refreshAddCourseAction()
@@ -609,8 +618,20 @@ private:
 		{
 
 		}
-	// LIST COURSE TAB
+// LIST COURSE TAB
 	private slots:
+		void searchCourseAction()
+		{
+			QString textSearchTemp = ui.searchCourseLineEdit->text();
+			QString textSearch     = textSearchTemp.trimmed();
+			if(textSearch == "")
+			{
+				QMessageBox::warning(this,tr("Skill choice"),tr("Please choose skills!!"));
+				return;
+			}
+			MYSQL_RES *res = database::course_searchPartName(conn,textSearch);
+		}
+
 		void refreshCourseListAction()
 		{
 			loadListCourseTab();
@@ -634,7 +655,6 @@ private:
 			setup4Step2();
 			setup4Step3();
 			ui.step2Widget->setEnabled(false);
-		//	ui.saveCourseButton->setVisible(true); // for testing
 
 			// Change tab to Course Tab
 			QWidget * tab = ui.mainTab->widget(3);

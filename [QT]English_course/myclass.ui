@@ -27,7 +27,7 @@
      <string/>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="listClassTab">
      <attribute name="title">
@@ -888,6 +888,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>searchCourseButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>searchCourseAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>285</x>
+     <y>114</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>281</x>
+     <y>728</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>searchCourseLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>searchCourseAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>181</x>
+     <y>108</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>182</x>
+     <y>717</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openFileAction()</slot>
@@ -906,5 +938,6 @@
   <slot>saveCourseAction()</slot>
   <slot>refreshAddCourseAction()</slot>
   <slot>refreshCourseListAction()</slot>
+  <slot>searchCourseAction()</slot>
  </slots>
 </ui>

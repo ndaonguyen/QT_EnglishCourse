@@ -332,8 +332,10 @@ public:
         QObject::connect(addSkill, SIGNAL(clicked()), MyClassClass, SLOT(addSkillAction()));
         QObject::connect(addMoreButton, SIGNAL(clicked()), MyClassClass, SLOT(refreshAddCourseAction()));
         QObject::connect(pushButton, SIGNAL(clicked()), MyClassClass, SLOT(refreshCourseListAction()));
+        QObject::connect(searchCourseButton, SIGNAL(clicked()), MyClassClass, SLOT(searchCourseAction()));
+        QObject::connect(searchCourseLineEdit, SIGNAL(returnPressed()), MyClassClass, SLOT(searchCourseAction()));
 
-        mainTab->setCurrentIndex(3);
+        mainTab->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(MyClassClass);
