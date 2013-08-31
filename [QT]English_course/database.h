@@ -173,6 +173,19 @@ public:
 		}
 		return -1;
 	}
+	static MYSQL_RES* skill_getAll(MYSQL *connect)
+	{
+		QString query = "SELECT * FROM `english_course`.`skill`";
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			MYSQL_RES *res_set;
+			res_set = mysql_store_result(connect);
+			return res_set;
+		}
+		return NULL;
+	}
 
 	static int skill_getMaxId(MYSQL *connect)
 	{

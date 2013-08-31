@@ -7,10 +7,9 @@ MyClass::MyClass(QWidget *parent, Qt::WFlags flags)
 	: QMainWindow(parent, flags)
 {
 	ui.setupUi(this);
-	configButton();
-
-	conn = database::connectByC();
 	loadConfigAddCourseTab();
+	configButton();
+	conn = database::connectByC();
 	loadListCourseTab();
 	loadListClassTab();
 }
