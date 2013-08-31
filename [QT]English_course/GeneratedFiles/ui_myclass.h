@@ -329,7 +329,6 @@ public:
         QObject::connect(all2LeftButton, SIGNAL(clicked()), MyClassClass, SLOT(all2LeftAction()));
         QObject::connect(leftWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), MyClassClass, SLOT(left2RightClickAction()));
         QObject::connect(rightWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), MyClassClass, SLOT(right2LeftClickAction()));
-        QObject::connect(saveCourseButton, SIGNAL(clicked()), MyClassClass, SLOT(saveCourseAction()));
         QObject::connect(addSkill, SIGNAL(clicked()), MyClassClass, SLOT(addSkillAction()));
         QObject::connect(addMoreButton, SIGNAL(clicked()), MyClassClass, SLOT(refreshAddCourseAction()));
         QObject::connect(pushButton, SIGNAL(clicked()), MyClassClass, SLOT(refreshCourseListAction()));
@@ -373,7 +372,7 @@ public:
 #endif // QT_NO_TOOLTIP
         classInsertGroupBox->setTitle(QApplication::translate("MyClassClass", "Info inserted :", 0, QApplication::UnicodeUTF8));
         skillLabelShow->setText(QApplication::translate("MyClassClass", "<html><head/><body><p><span style=\" font-weight:600;\">Skills:</span></p></body></html>", 0, QApplication::UnicodeUTF8));
-        saveCourseButton->setText(QApplication::translate("MyClassClass", "FINISH   !!!", 0, QApplication::UnicodeUTF8));
+        saveCourseButton->setText(QApplication::translate("MyClassClass", "FINISH,  BACK  TO LIST !!!", 0, QApplication::UnicodeUTF8));
         step1Label->setText(QApplication::translate("MyClassClass", "<html><head/><body><p><span style=\" font-weight:600;\">Step 1 :Course name (e.g: Ielts, Toefl,...)</span></p></body></html>", 0, QApplication::UnicodeUTF8));
         setCourseLabel->setText(QApplication::translate("MyClassClass", "Set course name:", 0, QApplication::UnicodeUTF8));
         saveButton->setText(QString());

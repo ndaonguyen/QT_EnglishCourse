@@ -20,10 +20,10 @@ private:
     QLabel *label;
 	QTableView *view;
 	MYSQL *conn;
-	QList<int > listMaterialIdDelete;  // save list id need to be deleted
+	QList<QString > listMaterialIdDelete;  // save list id need to be deleted
 	QStandardItemModel *model;
 	private slots:
-		void deleteMaterial(int materialId)
+		void deleteMaterial(QString materialId)
 		{
 			MYSQL_ROW rowMater = database::material_searchMaterialId(conn,materialId);
 			QString materialName = rowMater[1];
@@ -43,7 +43,7 @@ private:
 			int rowCount = model->rowCount();
 			for(int i=0;i<rowCount;i++)
 			{
-				int materId          = model->data(model->index(i,0),Qt::DisplayRole).toInt();
+				QString materId      = model->data(model->index(i,0),Qt::DisplayRole).toString();
 				QString materialStr  = model->data(model->index(i,1),Qt::DisplayRole).toString();
 				
 				database::material_editById(conn,materId,materialStr);
@@ -51,7 +51,7 @@ private:
 			int countIdDelete = listMaterialIdDelete.count();
 			for(int i=0; i < countIdDelete; i++)
 			{
-				int matId = listMaterialIdDelete.at(i);
+				QString matId = listMaterialIdDelete.at(i);
 				database::material_deleteById(conn,matId);
 				database::skillMaterial_deleteByMaterialId(conn,matId);
 			}

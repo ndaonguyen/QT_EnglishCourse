@@ -20,13 +20,11 @@ private:
 	QStandardItemModel *listCourseModel;
 	MYSQL *conn;
 	// info course
-	QString courseName;
-	int courseID;
+	QString courseName; //Current course name ( initial = "" )
+	int courseID;  // Current course_id ( initial = 0 )
 	QList<QString> skillsCourse;
 	QList<QListWidget *> skillWidgets;
 
-	int numExecuteStep2;
-	int numExecuteStep3;
 public:
 	//  START :ADD COURSE TAB
 			/* STEP 1 - 2 : CLICK BUTTON1 SAVE */
@@ -45,37 +43,48 @@ public:
 			}			
 		}
 	}
-	void setup4Step2(QString method,int courseId) // Main step 2 
+	void fillInfoStep2(QString method) //After having courseID
+	/**
+	**		
+	**/
+	{
+
+
+
+	}
+
+	void setup4Step2(QString method)// Main step 2 
 	{
 		/**
 		**	@parameter: method: "EDIT" or "CREATE"
 		**              courseId : if, edit --> choose CourseId
 		*/
-		ui.step1Widget->setEnabled(false);
-		courseName = ui.courseNameLineEdit->text();
-		courseID = database::course_saveAction(conn,courseName);
+		if(method =="CREATE")
+		{
+			fillDataStep2();
+			ui.line1_2->setVisible(true);
+			ui.step2Widget->setVisible(true);
 
-		fillDataStep2();
-		ui.line1_2->setVisible(true);
-		int count = ui.leftWidget->count();
-		ui.step2Widget->setVisible(true);
+			// info is updated to info box
+			QLabel *courseLabel = new QLabel(ui.classInsertGroupBox);
+			courseLabel->setText("<b>Course name:</b>");
+			ui.step1Layout->addWidget(courseLabel);
 
-		// info is updated to info box
-		QLabel *courseLabel = new QLabel(ui.classInsertGroupBox);
-		courseLabel->setText("<b>Course name:</b>");
-		ui.step1Layout->addWidget(courseLabel);
+			QLabel *courseNameShow = new QLabel(ui.classInsertGroupBox);
+			courseNameShow->setText(courseName);
+			ui.step1Layout->addWidget(courseNameShow);
 
-		QLabel *courseNameShow = new QLabel(ui.classInsertGroupBox);
-		courseNameShow->setText(courseName);
-		ui.step1Layout->addWidget(courseNameShow);
+			ui.resultLabel->setText("<span style='color:red'><b>Step1:Saved</b></span>");
+		}
+		else
+		{
 
-		ui.resultLabel->setText("<span style='color:red'><b>Step1:Saved</b></span>");
+		}
 		return;
 	}
 			/* END STEP 1 - 2  */
 
 			/* START STEP 2 - 3 CLICK BUTTON2 SAVE */
-
 	void saveCourseSKillTable(int numElementSkillBox)
 	{
 		//save to course_skill table
@@ -85,7 +94,7 @@ public:
 			MYSQL_ROW row = database::skill_searchName(conn,skill);
 			QString skillIdTemp = row[0];
 			int skillId = skillIdTemp.toInt();
-			database::courseSkill_saveAction(conn,skillId,courseID);
+			database::courseSkill_saveAction(conn,skillIdTemp,QString::number(courseID));
 		}
 	}
 
@@ -119,7 +128,6 @@ public:
 			connect(addButton,SIGNAL(clicked()),signalMapper, SLOT(map()));
 			connect(signalMapper, SIGNAL(mapped(QString)),this, SLOT(addMaterial(QString)));
 
-
 			QPushButton *listButton  = new QPushButton(ui.verticalLayoutWidget);
 			listButton->setText("List materials");
 			horizontalLayout_2->addWidget(listButton);
@@ -132,10 +140,7 @@ public:
 			horizontalLayout_2->addWidget(temp1);
 
 			ui.verticalLayout->addLayout(horizontalLayout_2);
-
 		}
-	//	verticalLayoutWidget->raise();
-	//	verticalLayoutWidget->show();
 	}
 
 	void setupInfoBoxStep2Save(int numElementBoxSkill)
@@ -167,10 +172,8 @@ public:
 		
 		ui.resultLabel->setText("<span style='color:blue'><b>Step2:saved</b></span>");
 		ui.saveCourseButton->setVisible(true);
-		numExecuteStep3 = numExecuteStep3 +1;
 	}
 			/* END STEP 2 - 3 CLICK BUTTON2 SAVE */
-
 
 	QString materialBox(QString skill,bool &ok)
 	{
@@ -199,8 +202,8 @@ public:
 				MYSQL_ROW row;
 				if(row = database::skill_searchName(conn,skill))
 				{
-					char* idSkill = row[0];
-					idMaterial = database::skillMaterial_saveAction(conn,atoi(idSkill),idMaterial,courseID);
+					QString idSkill = row[0];
+					idMaterial = database::skillMaterial_saveAction(conn,idSkill,QString::number(idMaterial),QString::number(courseID));
 					if(idMaterial!=-1)
 					{
 						//ui.step2WidgetInfo
@@ -216,23 +219,34 @@ public:
 		return ok;
 	}
 
-	void loadConfigAddCourseTab()
+	void configButton()
 	{
+	/*
+	**  Start connect for those button need to transfer data
+	**/
 		QSignalMapper *signalMapper = new QSignalMapper(this);
-		signalMapper->setMapping(ui.saveButton,0);
+		signalMapper->setMapping(ui.saveButton,courseID);
 		QObject::connect(ui.saveButton,SIGNAL(clicked()),signalMapper, SLOT(map()));
 		QObject::connect(signalMapper, SIGNAL(mapped(int)),this, SLOT(step1SaveAction(int)));
 
 		QSignalMapper *signalMapper1 = new QSignalMapper(this);
-		signalMapper1->setMapping(ui.courseNameLineEdit,0);
+		signalMapper1->setMapping(ui.courseNameLineEdit,courseID);
 		QObject::connect(ui.courseNameLineEdit,SIGNAL(returnPressed()),signalMapper1, SLOT(map()));
 		QObject::connect(signalMapper1, SIGNAL(mapped(int)),this, SLOT(step1SaveAction(int)));
 	 
 		QSignalMapper *signalMapper2 = new QSignalMapper(this);
-		signalMapper2->setMapping(ui.saveButton2,0);
+		signalMapper2->setMapping(ui.saveButton2,courseID);
 		QObject::connect(ui.saveButton2,SIGNAL(clicked()),signalMapper2, SLOT(map()));
 		QObject::connect(signalMapper2, SIGNAL(mapped(int)),this, SLOT(step2SaveAction(int)));
 
+		QSignalMapper *signalMapper3 = new QSignalMapper(this);
+		signalMapper3->setMapping(ui.saveCourseButton,courseID);
+		QObject::connect(ui.saveCourseButton,SIGNAL(clicked()),signalMapper3,SLOT(map()));
+		QObject::connect(signalMapper3,SIGNAL(mapped(int)), this, SLOT(saveCourseAction(int)));
+	}
+
+	void loadConfigAddCourseTab()
+	{
 		ui.saveCourseButton->setVisible(false);
 		ui.line1_2->setVisible(false);
 		ui.line2_3->setVisible(false);
@@ -240,9 +254,6 @@ public:
 		ui.step3Widget->setVisible(false);
 		ui.skillLabelShow->setVisible(false);
 		ui.addMoreButton->setVisible(false);
-
-		numExecuteStep2 = 0;
-		numExecuteStep3 = 0;
 	}
 	void clearItemsLayout(QLayout* layout)
 	{
@@ -256,11 +267,11 @@ public:
 				delete item->widget();
 	}
 
-
 	void refreshToOrigin()
 	{
 		loadConfigAddCourseTab();
 
+		ui.courseNameLineEdit->setText("");
 		ui.courseNameLineEdit->setText("");
 		ui.step1Widget->setEnabled(true);
 		ui.step2Widget->setEnabled(true);
@@ -273,8 +284,6 @@ public:
 		clearItemsLayout(ui.verticalLayout);
 
 		//step 2 
-		numExecuteStep2 = 0;
-		numExecuteStep3 = 0;
 		int numLeft  = ui.leftWidget->count();
 		int numRight = ui.rightWidget->count();
 		for (int i =0;i<numLeft;i++)
@@ -290,7 +299,6 @@ public:
 	//  END :ADD COURSE TAB
 
 	// START: LIST CLASS TAB
-	
 	void loadListClassTab()
 	{
 		listClassModel = new QStandardItemModel(this); //2 Rows and 3 Columns
@@ -318,25 +326,17 @@ public:
 	}
 	// END: LIST CLASS TAB
 
-
 	//  START :LIST COURSE TAB
-	
-
 	QString getSkillList(QString courseId)
 	{
-		QString  temp = courseId;
-		std::string idTemp = temp.toStdString();
-		const char* idTemp2 = idTemp.c_str();
-		
 		MYSQL_ROW row2;
-		MYSQL_RES* rest2 = database::courseSkill_searchCourseId(conn, atoi(idTemp2));
+		MYSQL_RES* rest2 = database::courseSkill_searchCourseId(conn, courseId);
 		QString skillString="";
+		QString skillID ="";
 		while(row2 = mysql_fetch_row(rest2))
 		{
-			temp = row2[1];
-			idTemp = temp.toStdString();
-			idTemp2 = idTemp.c_str();	
-			MYSQL_ROW row3 = database::skill_searchSkillId(conn, atoi(idTemp2));
+			skillID = row2[1];
+			MYSQL_ROW row3 = database::skill_searchSkillId(conn, skillID);
 			skillString = skillString + row3[1] +",";
 		}
 		skillString = skillString.mid(0,skillString.length()-1);  // Skill of that course
@@ -420,13 +420,9 @@ private:
 		}
 		// END refresh (add more action)
 
-
 		// START STEP 1 action
 		void step1SaveAction(int courseId) // disable step 1, enable step 2, update info to info box
 		{
-			if (numExecuteStep2 >0)
-				return;
-
 			// check box name is empty
 			if(ui.courseNameLineEdit->text().trimmed() == "")
 			{
@@ -434,13 +430,23 @@ private:
 				ui.courseNameLineEdit->setFocus();
 				return;
 			}
+			courseName = ui.courseNameLineEdit->text();
 
 			char* method = "CREATE";
 			if ( courseId !=0)
 				method = "EDIT";
 
-			setup4Step2(method,courseId );
-			numExecuteStep2 = numExecuteStep2+1;
+			if(method == "CREATE")
+			{
+				ui.step1Widget->setEnabled(false);
+				courseID = database::course_saveAction(conn,courseName);
+			}
+			else
+			{
+				database::course_editById(conn,courseID,courseName);
+			}
+
+			setup4Step2(method);
 			return;
 		}
 		// END STEP 1 action
@@ -448,9 +454,6 @@ private:
 		// START STEP2 2 action
 		void step2SaveAction(int courseId) // save value to skillsCourse, fill step 3 info, step 3 appear, fill info into info bo
 		{
-			if (numExecuteStep3 >0)
-				return;
-
 			int numElement = ui.rightWidget->count();
 			if(numElement == 0)
 			{
@@ -538,22 +541,16 @@ private:
 			{
 				MYSQL_ROW skillRow = database::skill_searchName(conn,skill);
 				QString skillId    = skillRow[0];
-				temp1              = skillId.toStdString();
-				temp2              = temp1.c_str();
-				int skillIdInt     = atoi(temp2);
-				
 				//Clear old list, and add new list --> Box Info
 				QListWidget *listWidget = skillWidgets.at(indexInt);
 				listWidget->clear();
 
-				MYSQL_RES *res = database::skillMaterial_searchSkillId(conn,skillIdInt,courseID);
+				QString courseIdStr  = QString::number(courseID);
+				MYSQL_RES *res = database::skillMaterial_searchSkillId(conn,skillId,courseIdStr);
 				while(MYSQL_ROW skillMaRow = mysql_fetch_row(res))
 				{
 					QString maId = skillMaRow[1];
-					temp1		 = maId.toStdString();
-					temp2        = temp1.c_str();
-					int maIdInt  = atoi(temp2);
-					MYSQL_ROW materialRow = database::material_searchMaterialId(conn,maIdInt);
+					MYSQL_ROW materialRow = database::material_searchMaterialId(conn,maId);
 					if(materialRow)
 					{
 						QString ma   = materialRow[1];
@@ -578,9 +575,8 @@ private:
 		}
 		// END STEP 3 action
 		
-		void saveCourseAction()
+		void saveCourseAction(int courseIdInt)
 		{
-			// active List Course tab
 			QWidget * tab = ui.mainTab->widget(2);
 			ui.mainTab->setCurrentWidget(tab);
 			refreshToOrigin();
@@ -622,18 +618,22 @@ private:
 			loadListCourseTab();
 
 		}
-
 		void loadDialogAction(QString courseId)
 		{
 			listCourseDialog *courseDialog = new listCourseDialog(this,courseId);
 			courseDialog->exec();
 		}
-
 		void editCourseAction(QString courseId)
 		{
-			int a = 0;
 			// Edit info
-
+			// --> Must asign value to CourseId and CourseName --> for value in clicked() signal()
+			MYSQL_ROW courseRow = database::course_searchId(conn,courseId);
+			courseName          = courseRow[1];
+			courseID = courseId.toInt();
+			//setup info
+			ui.courseNameLineEdit->setText(courseName); // step1
+			
+		//	ui.saveCourseButton->setVisible(true); // for testing
 
 			// Change tab to Course Tab
 			QWidget * tab = ui.mainTab->widget(3);
@@ -644,7 +644,6 @@ private:
 
 			ui.addMoreButton->setVisible(false);
 		}
-
 		void deleteCourseAction(QString courseId)
 		{
 		/**
@@ -656,36 +655,25 @@ private:
 			if(ret == QMessageBox::Ok)
 			{
 				//delete database ( children --> parent)
-
-				std::string temp  = courseId.toStdString();
-				const char* temp1 = temp.c_str();
-				int courseIdInt   = atoi(temp1);
-
-				MYSQL_ROW courseRow = database::course_searchId(conn, courseIdInt);
+				MYSQL_ROW courseRow = database::course_searchId(conn, courseId);
 				QString nameCourse  = courseRow[1];
 				
-				MYSQL_RES *res = database::courseSkill_searchCourseId(conn,courseIdInt);
+				MYSQL_RES *res = database::courseSkill_searchCourseId(conn,courseId);
 				while( MYSQL_ROW courseSkillRow = mysql_fetch_row(res))
 				{
 					QString skillId = courseSkillRow[1];
-					temp  = skillId.toStdString();
-					temp1 = temp.c_str();
-					int skillIdInt   = atoi(temp1);
-					MYSQL_ROW skillRow = database::skill_searchSkillId(conn,skillIdInt);
+					MYSQL_ROW skillRow = database::skill_searchSkillId(conn,skillId);
 
-					MYSQL_RES *resSkillMaterial = database::skillMaterial_searchSkillId(conn,skillIdInt,courseIdInt);
+					MYSQL_RES *resSkillMaterial = database::skillMaterial_searchSkillId(conn,skillId,courseId);
 					while(MYSQL_ROW skillMaterialRow = mysql_fetch_row(resSkillMaterial) )
 					{
 						QString materialId = skillMaterialRow[1];
-						temp  = materialId.toStdString();
-						temp1 = temp.c_str();
-						int materialIdInt  = atoi(temp1);
-						database::material_deleteById(conn,materialIdInt);
-						database::skillMaterial_deleteByMaterialId(conn,materialIdInt);
+						database::material_deleteById(conn,materialId);
+						database::skillMaterial_deleteByMaterialId(conn,materialId);
 					}
-					database::courseSkill_deleteBySkillId(conn,skillIdInt);
+					database::couresSkill_deleteByCourseId(conn,skillId);
 				}
-				database::course_deleteBySkillId(conn,courseIdInt);
+				database::course_deleteBySkillId(conn,courseId);
 			
 				// Delete row of QTableView
 				int rowCount = listCourseModel->rowCount();

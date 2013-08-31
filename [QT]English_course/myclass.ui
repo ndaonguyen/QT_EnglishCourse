@@ -210,7 +210,7 @@
         <bool>true</bool>
        </property>
        <property name="text">
-        <string>FINISH   !!!</string>
+        <string>FINISH,  BACK  TO LIST !!!</string>
        </property>
       </widget>
      </widget>
@@ -837,22 +837,6 @@
     <hint type="destinationlabel">
      <x>51</x>
      <y>676</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>saveCourseButton</sender>
-   <signal>clicked()</signal>
-   <receiver>MyClassClass</receiver>
-   <slot>saveCourseAction()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>707</x>
-     <y>669</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>677</x>
-     <y>691</y>
     </hint>
    </hints>
   </connection>

@@ -23,13 +23,14 @@ listMaterialDialog::listMaterialDialog(QWidget *parent, QString skillName, int c
 		model->setHorizontalHeaderItem(1,new QStandardItem(tr("Material")));
 		model->setHorizontalHeaderItem(0,new QStandardItem(tr("Id")));
 
-		int skillId = atoi(skillRow[0]);
-		MYSQL_RES* res_set =  database::skillMaterial_searchSkillId(conn,skillId,courseId);
+		QString skillId = skillRow[0];
+		QString couId   = QString::number(courseId);
+		MYSQL_RES* res_set =  database::skillMaterial_searchSkillId(conn,skillId,couId);
 		MYSQL_ROW row;
 		int rowIndex = 0;
 		while(row = mysql_fetch_row(res_set))
 		{
-			int materialId = atoi(row[1]);
+			QString materialId = row[1];
 			MYSQL_ROW rowMaterial =  database::material_searchMaterialId(conn,materialId);
 			QString material = QString::fromUtf8(rowMaterial[1]);
 
@@ -41,7 +42,7 @@ listMaterialDialog::listMaterialDialog(QWidget *parent, QString skillName, int c
 			QSignalMapper *signalMapper = new QSignalMapper(this);
 			signalMapper->setMapping(button,materialId);
 			QObject::connect(button,SIGNAL(clicked()),signalMapper,SLOT(map()));
-			QObject::connect(signalMapper,SIGNAL(mapped(int)),this,SLOT(deleteMaterial(int)));
+			QObject::connect(signalMapper,SIGNAL(mapped(QString)),this,SLOT(deleteMaterial(QString)));
 
 			QStandardItem *materName = new QStandardItem(material);
 			model->setItem(rowIndex, 1, materName);

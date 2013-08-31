@@ -56,7 +56,7 @@ public:
 	}
 
 	// MATERIAL TABLE
-	static MYSQL_ROW material_searchMaterialId(MYSQL *connect, int materialId)
+	static MYSQL_ROW material_searchMaterialId(MYSQL *connect, QString materialId)
 	{
 	/**
 	** @parameter : skillID	
@@ -64,10 +64,8 @@ public:
 	*/
 		MYSQL_RES *res_set;
 		MYSQL_ROW row;
-		char bufferId[5];
-		itoa(materialId,bufferId,10);
-
-		QString tem = "SELECT * FROM `english_course`.`material` WHERE `id` = '"+QString::fromUtf8(bufferId)+"'";			
+	
+		QString tem = "SELECT * FROM `english_course`.`material` WHERE `id` = '"+materialId+"'";			
 		std::string temp1 = tem.toStdString();
 		const char* temp2 = temp1.c_str();
 		if(mysql_query(connect,temp2) ==0)
@@ -115,12 +113,9 @@ public:
 		}
 		return -1;
 	}
-	static int material_deleteById(MYSQL *connect, int materialId)
+	static int material_deleteById(MYSQL *connect, QString materialId)
 	{
-		char bufferId[5];
-		itoa(materialId,bufferId,10);
-
-		QString query = "DELETE FROM `english_course`.`material` WHERE `material`.`id` =" + QString::fromUtf8(bufferId);
+		QString query = "DELETE FROM `english_course`.`material` WHERE `material`.`id` =" + materialId;
 		std::string query2 = query.toStdString();
 		const char* query1 = query2.c_str();
 		if(mysql_query(connect,query1)==0)
@@ -129,13 +124,10 @@ public:
 		}
 		return -1;
 	}
-	static int material_editById(MYSQL *connect, int materialId, QString material)
+	static int material_editById(MYSQL *connect, QString materialId, QString material)
 	{
 		//UPDATE `english_course`.`material` SET `name` = 'edit done' WHERE `material`.`id` =198;
-		char bufferId[5];
-		itoa(materialId,bufferId,10);
-
-		QString query = "UPDATE `english_course`.`material` SET `name` = '"+material+"' WHERE `id` =" + QString::fromUtf8(bufferId);
+		QString query = "UPDATE `english_course`.`material` SET `name` = '"+material+"' WHERE `id` =" + materialId;
 		std::string query2 = query.toStdString();
 		const char* query1 = query2.c_str();
 		if(mysql_query(connect,query1)==0)
@@ -146,7 +138,7 @@ public:
 	}
 
 	//SKILL TABLE
-	static MYSQL_ROW skill_searchSkillId(MYSQL *connect, int skillId)
+	static MYSQL_ROW skill_searchSkillId(MYSQL *connect, QString skillId)
 	{
 	/**
 	** @parameter : skillID	
@@ -154,11 +146,7 @@ public:
 	*/
 		MYSQL_RES *res_set;
 		MYSQL_ROW row;
-		char bufferId[5];
-		itoa(skillId,bufferId,10);
-
-
-		QString tem = "SELECT * FROM `english_course`.`skill` WHERE `id` = '"+QString::fromUtf8(bufferId)+"'";			
+		QString tem = "SELECT * FROM `english_course`.`skill` WHERE `id` = '"+skillId+"'";			
 		std::string temp1 = tem.toStdString();
 		const char* temp2 = temp1.c_str();
 		if(mysql_query(connect,temp2) ==0)
@@ -223,12 +211,9 @@ public:
 		}
 		return NULL;
 	}
-	static int skill_deleteById(MYSQL *connect, int skillId)
+	static int skill_deleteById(MYSQL *connect, QString skillId)
 	{
-		char bufferId[5];
-		itoa(skillId,bufferId,10);
-
-		QString query = "DELETE FROM `english_course`.`skill` WHERE `id` =" + QString::fromUtf8(bufferId);
+		QString query = "DELETE FROM `english_course`.`skill` WHERE `id` =" + skillId;
 		std::string query2 = query.toStdString();
 		const char* query1 = query2.c_str();
 		if(mysql_query(connect,query1)==0)
@@ -256,20 +241,15 @@ public:
 		return -1;
 	}
 
-	static MYSQL_RES* skillMaterial_searchSkillId(MYSQL *connect, int skillId,int courseId)
+	static MYSQL_RES* skillMaterial_searchSkillId(MYSQL *connect, QString skillId,QString courseId)
 	{
 		/**
 		** @parameter: skill id
 		** @return : row of all value 
 		*/
 		MYSQL_RES *res_set;
-//		MYSQL_ROW *row ;
-		char bufferId[5];
-		itoa(skillId,bufferId,10);
-		char bufferCourseId[5];
-		itoa(courseId,bufferCourseId,10);
 
-		QString tem = "SELECT * FROM `english_course`.`skill_material` WHERE `skill_id` = '"+QString::fromUtf8(bufferId)+"' AND `course_id`='"+  QString::fromUtf8(bufferCourseId)+"'";			
+		QString tem = "SELECT * FROM `english_course`.`skill_material` WHERE `skill_id` = '"+skillId+"' AND `course_id`='"+ courseId+"'";			
 		std::string temp1 = tem.toStdString();
 		const char* temp2 = temp1.c_str();
 		if(mysql_query(connect,temp2) ==0)
@@ -281,20 +261,13 @@ public:
 		return NULL;
 	}
 
-	static int skillMaterial_saveAction(MYSQL *connect,int idSkill, int idMaterial, int idCourse)
+	static int skillMaterial_saveAction(MYSQL *connect,QString idSkill, QString idMaterial, QString idCourse)
 	{
 	/**
 	** @parameter : material name 	
 	** @return: id inserted
 	*/
-		char skill[5];
-		char material[5];
-		char course[5];
-		itoa(idSkill,skill,10);
-		itoa(idMaterial,material,10);
-		itoa(idCourse,course,10);
-
-		QString query = "INSERT INTO `english_course`.`skill_material` VALUE("+QString::fromUtf8(skill)+","+QString::fromUtf8(material)+","+QString::fromUtf8(course)+")";
+		QString query = "INSERT INTO `english_course`.`skill_material` VALUE("+idSkill+","+idMaterial+","+idCourse+")";
 		std::string query2 = query.toStdString();
 		const char* query1 = query2.c_str();
 		if(mysql_query(connect,query1)==0)
@@ -303,12 +276,9 @@ public:
 		}
 		return -1;
 	}
-	static int skillMaterial_deleteByMaterialId(MYSQL *connect, int materialId)
+	static int skillMaterial_deleteByMaterialId(MYSQL *connect, QString materialId)
 	{
-		char bufferId[5];
-		itoa(materialId,bufferId,10);
-
-		QString query = "DELETE FROM `english_course`.`skill_material` WHERE `material_id` =" + QString::fromUtf8(bufferId);
+		QString query = "DELETE FROM `english_course`.`skill_material` WHERE `material_id` =" + materialId;
 		std::string query2 = query.toStdString();
 		const char* query1 = query2.c_str();
 		if(mysql_query(connect,query1)==0)
@@ -387,12 +357,9 @@ public:
 		}
 		return NULL;
 	}
-	static int course_deleteBySkillId(MYSQL *connect, int courseId)
+	static int course_deleteBySkillId(MYSQL *connect, QString courseId)
 	{
-		char bufferId[5];
-		itoa(courseId,bufferId,10);
-
-		QString query = "DELETE FROM `english_course`.`course` WHERE `id` =" + QString::fromUtf8(bufferId);
+		QString query = "DELETE FROM `english_course`.`course` WHERE `id` =" + courseId;
 		std::string query2 = query.toStdString();
 		const char* query1 = query2.c_str();
 		if(mysql_query(connect,query1)==0)
@@ -402,7 +369,7 @@ public:
 		return -1;
 	}
 
-	static MYSQL_ROW course_searchId(MYSQL *connect, int courseId)
+	static MYSQL_ROW course_searchId(MYSQL *connect, QString courseId)
 	{
 	/**
 	** @parameter : skillID	
@@ -410,11 +377,7 @@ public:
 	*/
 		MYSQL_RES *res_set;
 		MYSQL_ROW row;
-		char bufferId[5];
-		itoa(courseId,bufferId,10);
-
-
-		QString tem = "SELECT * FROM `english_course`.`course` WHERE `id` = '"+QString::fromUtf8(bufferId)+"'";			
+		QString tem = "SELECT * FROM `english_course`.`course` WHERE `id` = '"+courseId+"'";			
 		std::string temp1 = tem.toStdString();
 		const char* temp2 = temp1.c_str();
 		if(mysql_query(connect,temp2) ==0)
@@ -425,20 +388,26 @@ public:
 		}
 		return NULL;
 	}
+	static int course_editById(MYSQL *connect, QString courseId, QString course)
+	{
+		QString query = "UPDATE `english_course`.`course` SET `name` = '"+course+"' WHERE `id` =" + courseId;
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			return 1;
+		}
+		return -1;
+	}
 
 	// COURSE_SKILL table
-	static int courseSkill_saveAction(MYSQL *connect,int idSkill, int idCourse)
+	static int courseSkill_saveAction(MYSQL *connect,QString idSkill, QString idCourse)
 	{
 	/**
 	** @parameter : material name 	
 	** @return: id inserted
 	*/
-		char skill[5];
-		char course[5];
-		itoa(idSkill,skill,10);
-		itoa(idCourse,course,10);
-
-		QString query = "INSERT INTO `english_course`.`course_skill` VALUE("+QString::fromUtf8(course)+","+QString::fromUtf8(skill)+")";
+		QString query = "INSERT INTO `english_course`.`course_skill` VALUE("+idCourse+","+idSkill+")";
 		std::string query2 = query.toStdString();
 		const char* query1 = query2.c_str();
 		if(mysql_query(connect,query1)==0)
@@ -465,35 +434,38 @@ public:
 		return -1;
 	}
 	
-	static MYSQL_RES* courseSkill_searchCourseId(MYSQL *connect,int courseId)
+	static MYSQL_RES* courseSkill_searchCourseId(MYSQL *connect,QString courseId)
 	{
 	/**
 	** @parameter : courseId	
 	** @return:  row of all value from course_skill table
 	*/
 		MYSQL_RES *res_set;
-		char bufferId[5];
-		itoa(courseId,bufferId,10);
-
-
-		QString tem = "SELECT * FROM `english_course`.`course_skill` WHERE `course_id` = '"+QString::fromUtf8(bufferId)+"'";			
+		QString tem = "SELECT * FROM `english_course`.`course_skill` WHERE `course_id` = '"+courseId+"'";			
 		std::string temp1 = tem.toStdString();
 		const char* temp2 = temp1.c_str();
 		if(mysql_query(connect,temp2) ==0)
 		{
 			res_set = mysql_store_result(connect);
-		//	row = mysql_fetch_row(res_set);
 			return res_set;
 		}
 		return NULL;
 	}
-
-	static int courseSkill_deleteBySkillId(MYSQL *connect, int skillId)
+	static int couresSkill_deleteByCourseId(MYSQL *connect, QString courseId)
 	{
-		char bufferId[5];
-		itoa(skillId,bufferId,10);
+		QString query = "DELETE FROM `english_course`.`course_skill` WHERE `course_id` =" + courseId;
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			return 1;
+		}
+		return -1;
+	}
 
-		QString query = "DELETE FROM `english_course`.`course_skill` WHERE `skill_id` =" + QString::fromUtf8(bufferId);
+	static int courseSkill_deleteBySkillId(MYSQL *connect, QString skillId)
+	{
+		QString query = "DELETE FROM `english_course`.`course_skill` WHERE `skill_id` =" + skillId;
 		std::string query2 = query.toStdString();
 		const char* query1 = query2.c_str();
 		if(mysql_query(connect,query1)==0)
