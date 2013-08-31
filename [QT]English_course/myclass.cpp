@@ -10,6 +10,7 @@ MyClass::MyClass(QWidget *parent, Qt::WFlags flags)
 	loadConfigAddCourseTab();
 	configButton();
 	conn = database::connectByC();
+//	ui.listCourseTable->setModel(listCourseModel);
 	loadListCourseTab();
 	loadListClassTab();
 }

@@ -333,7 +333,7 @@ public:
 		return skillString;
 	}
 
-	void fillListCourse(MYSQL_RES *res_set)
+	void fillListCourse(MYSQL_RES *res_set,QTableView *listCourseTable,QStandardItemModel *courseModel)
 	{
 	/*
 	** Fill to the next rows of QTableList
@@ -344,17 +344,17 @@ public:
 		QList<QString> courseIdList;
 		while(row = mysql_fetch_row(res_set))
 		{
-			QString course   = row[1];  // courseName
+			QString course   = row[1];  // course Name
 			QString courseId = row[0];
 			courseIdList.append(courseId);
 
 			QString skillString = getSkillList(courseId);	
 		
-			listCourseModel->setItem(indexRow,0,new QStandardItem(course));
-			listCourseModel->setItem(indexRow,1,new QStandardItem(skillString));
+			courseModel->setItem(indexRow,0,new QStandardItem(course));
+			courseModel->setItem(indexRow,1,new QStandardItem(skillString));
 			indexRow++;
 		}
-		ui.listCourseTable->setModel(listCourseModel);
+		
 
 		//Add button Detail và Button Edit vào
 		int numCourseId = courseIdList.length();
@@ -365,7 +365,7 @@ public:
 			signalMapper->setMapping(detailButton,courseIdList.at(i));
 			QObject::connect(detailButton,SIGNAL(clicked()),signalMapper, SLOT(map()));
 			QObject::connect(signalMapper, SIGNAL(mapped(QString)),this, SLOT(loadDialogAction(QString)));			
-			ui.listCourseTable->setIndexWidget(listCourseModel->index(i,2),detailButton);
+			listCourseTable->setIndexWidget(courseModel->index(i,2),detailButton);
 
 			QPushButton *editButton = new QPushButton("Edit");
 			QPixmap pixmap("Resources/edit.jpg");
@@ -375,7 +375,7 @@ public:
 			signalMapper1->setMapping(editButton,courseIdList.at(i));
 			QObject::connect(editButton,SIGNAL(clicked()),signalMapper1, SLOT(map()));
 			QObject::connect(signalMapper1, SIGNAL(mapped(QString)),this, SLOT(editCourseAction(QString)));
-			ui.listCourseTable->setIndexWidget(listCourseModel->index(i,3),editButton);
+			listCourseTable->setIndexWidget(courseModel->index(i,3),editButton);
 
 			QPushButton *deleteButton = new QPushButton("Delete");
 			QPixmap pixmap1("Resources/Delete_icon.png");
@@ -385,7 +385,7 @@ public:
 			signalMapper2->setMapping(deleteButton,courseIdList.at(i));
 			QObject::connect(deleteButton,SIGNAL(clicked()),signalMapper2, SLOT(map()));
 			QObject::connect(signalMapper2, SIGNAL(mapped(QString)),this, SLOT(deleteCourseAction(QString)));
-			ui.listCourseTable->setIndexWidget(listCourseModel->index(i,4),deleteButton);
+			listCourseTable->setIndexWidget(courseModel->index(i,4),deleteButton);
 		}
 	}
 
@@ -401,7 +401,8 @@ public:
 		listCourseModel->setHorizontalHeaderItem(4,new QStandardItem(tr("Delete")));
 
 		MYSQL_RES* res_set = database::course_getAll(conn);
-		fillListCourse(res_set);
+		ui.listCourseTable->setModel(listCourseModel);
+		fillListCourse(res_set,ui.listCourseTable,listCourseModel);
 	}
 
 public:
