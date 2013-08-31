@@ -156,8 +156,9 @@ public:
 			skillWidgets.append(listSkill);
 		}
 	}
-	void setup4Step3(int numSkills) // Main step 3 
+	void setup4Step3() // Main step 3 
 	{
+		int numSkills = ui.rightWidget->count();
 		//set up What appear in info added box
 		setupStep3Add(numSkills);	// create + edit : ok 
 		ui.line2_3->setVisible(true);
@@ -459,7 +460,7 @@ private:
 			if(courseMode == "CREATE")
 				saveCourseSKillTable(numSkills);
 
-			setup4Step3(numSkills);
+			setup4Step3();
 			
 		}
 		void addSkillAction()
@@ -631,7 +632,7 @@ private:
 			//setup info
 			ui.courseNameLineEdit->setText(courseName); // step1
 			setup4Step2();
-			setup4Step3(4);
+			setup4Step3();
 			ui.step2Widget->setEnabled(false);
 		//	ui.saveCourseButton->setVisible(true); // for testing
 
