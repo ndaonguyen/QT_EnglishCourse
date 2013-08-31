@@ -333,14 +333,17 @@ public:
 		return skillString;
 	}
 
-	void fillListCourse(MYSQL_RES *res_set,QTableView *listCourseTable,QStandardItemModel *courseModel)
+	void fillListCourse(MYSQL_RES *res_set,QTableView *listCourseTable,QStandardItemModel *courseModel, int indexRow)
 	{
 	/*
 	** Fill to the next rows of QTableList
-	**
+	** @params: res_set: data need to be filled
+	**			listCourseTable : QTableView to filled data
+	**			courseModel : Model of QTableView
+	**			indexRow    : index of row to continue insert
 	*/
 		MYSQL_ROW row;
-		int indexRow =0;
+		int indexTemp = indexRow;
 		QList<QString> courseIdList;
 		while(row = mysql_fetch_row(res_set))
 		{
@@ -350,19 +353,20 @@ public:
 
 			QString skillString = getSkillList(courseId);	
 		
-			courseModel->setItem(indexRow,0,new QStandardItem(course));
-			courseModel->setItem(indexRow,1,new QStandardItem(skillString));
-			indexRow++;
+			courseModel->setItem(indexTemp,0,new QStandardItem(course));
+			courseModel->setItem(indexTemp,1,new QStandardItem(skillString));
+			indexTemp++;
 		}
-		
 
 		//Add button Detail và Button Edit vào
 		int numCourseId = courseIdList.length();
-		for(int i = 0 ; i < numCourseId ; i++)
+		for(int i = indexRow ; i < numCourseId ; i++)
 		{
+			int indexCourseIdList = i-indexRow;
+
 			QPushButton *detailButton = new QPushButton("Detail");			
 			QSignalMapper *signalMapper = new QSignalMapper(this);
-			signalMapper->setMapping(detailButton,courseIdList.at(i));
+			signalMapper->setMapping(detailButton,courseIdList.at(indexCourseIdList));
 			QObject::connect(detailButton,SIGNAL(clicked()),signalMapper, SLOT(map()));
 			QObject::connect(signalMapper, SIGNAL(mapped(QString)),this, SLOT(loadDialogAction(QString)));			
 			listCourseTable->setIndexWidget(courseModel->index(i,2),detailButton);
@@ -372,7 +376,7 @@ public:
 			QIcon ButtonIcon(pixmap);
 			editButton->setIcon(ButtonIcon);
 			QSignalMapper *signalMapper1 = new QSignalMapper(this);
-			signalMapper1->setMapping(editButton,courseIdList.at(i));
+			signalMapper1->setMapping(editButton,courseIdList.at(indexCourseIdList));
 			QObject::connect(editButton,SIGNAL(clicked()),signalMapper1, SLOT(map()));
 			QObject::connect(signalMapper1, SIGNAL(mapped(QString)),this, SLOT(editCourseAction(QString)));
 			listCourseTable->setIndexWidget(courseModel->index(i,3),editButton);
@@ -382,27 +386,28 @@ public:
 			QIcon ButtonIcon1(pixmap1);
 			deleteButton->setIcon(ButtonIcon1);
 			QSignalMapper *signalMapper2 = new QSignalMapper(this);
-			signalMapper2->setMapping(deleteButton,courseIdList.at(i));
+			signalMapper2->setMapping(deleteButton,courseIdList.at(indexCourseIdList));
 			QObject::connect(deleteButton,SIGNAL(clicked()),signalMapper2, SLOT(map()));
 			QObject::connect(signalMapper2, SIGNAL(mapped(QString)),this, SLOT(deleteCourseAction(QString)));
 			listCourseTable->setIndexWidget(courseModel->index(i,4),deleteButton);
 		}
 	}
+	void fillHeaderListCourse(QStandardItemModel *courseModel)
+	{
+		courseModel->setHorizontalHeaderItem(0,new QStandardItem(tr("Course Name")));
+		courseModel->setHorizontalHeaderItem(1,new QStandardItem(tr("Skill")));
+		courseModel->setHorizontalHeaderItem(2,new QStandardItem(tr("Material")));
+		courseModel->setHorizontalHeaderItem(3,new QStandardItem(tr("Edit")));
+		courseModel->setHorizontalHeaderItem(4,new QStandardItem(tr("Delete")));
+	}
 
 	void loadListCourseTab()
 	{
-		int column = 3;
 		listCourseModel = new QStandardItemModel(ui.listCourseTab);
-		
-		listCourseModel->setHorizontalHeaderItem(0,new QStandardItem(tr("Course Name")));
-		listCourseModel->setHorizontalHeaderItem(1,new QStandardItem(tr("Skill")));
-		listCourseModel->setHorizontalHeaderItem(2,new QStandardItem(tr("Material")));
-		listCourseModel->setHorizontalHeaderItem(3,new QStandardItem(tr("Edit")));
-		listCourseModel->setHorizontalHeaderItem(4,new QStandardItem(tr("Delete")));
-
-		MYSQL_RES* res_set = database::course_getAll(conn);
 		ui.listCourseTable->setModel(listCourseModel);
-		fillListCourse(res_set,ui.listCourseTable,listCourseModel);
+		fillHeaderListCourse(listCourseModel);
+		MYSQL_RES* res_set = database::course_getAll(conn);
+		fillListCourse(res_set,ui.listCourseTable,listCourseModel,0);
 	}
 
 public:
@@ -625,18 +630,18 @@ private:
 		{
 			QString textSearchTemp = ui.searchCourseLineEdit->text();
 			QString textSearch     = textSearchTemp.trimmed();
-			if(textSearch == "")
-			{
-				QMessageBox::warning(this,tr("Skill choice"),tr("Please choose skills!!"));
-				return;
-			}
+		
 			MYSQL_RES *res = database::course_searchPartName(conn,textSearch);
+			//delete all row and fill data
+			listCourseModel->clear();
+			fillHeaderListCourse(listCourseModel);
+			fillListCourse(res,ui.listCourseTable,listCourseModel,0);
 		}
 
 		void refreshCourseListAction()
 		{
 			loadListCourseTab();
-
+			ui.searchCourseLineEdit->setText("");
 		}
 		void loadDialogAction(QString courseId)
 		{
