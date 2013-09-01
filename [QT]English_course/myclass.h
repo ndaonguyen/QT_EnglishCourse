@@ -16,17 +16,136 @@ class MyClass : public QMainWindow
 {
 	Q_OBJECT
 private: 
+	MYSQL *conn;
+// COURSE info
 	QStandardItemModel *listClassModel;
 	QStandardItemModel *listCourseModel;
-	MYSQL *conn;
-	// info course
 	QString courseMode;
 	QString courseName; //Current course name ( initial = "" )
 	int courseID;  // Current course_id ( initial = 0 )
 	QList<QString> skillsCourse;
 	QList<QListWidget *> skillWidgets;
-
+// CLASS info
+	QStandardItemModel *addMemberModel;
+	QList<QStandardItemModel*> skillModelList; // list contain material ( set current situation)
+	QList<QTableView*>  skillTableList; // list contain material 
 public:
+	/**
+	  * set Header for QTableView
+	  * @param model: of QTableView, listHeader : list of Header String
+	  */
+	void setHeaderTable(QStandardItemModel *model, QList<QString> listHeader)
+	{
+		int count = listHeader.count();
+		for(int i =0;i<count;i++)
+			model->setHorizontalHeaderItem(i, new QStandardItem(listHeader.at(i)));
+	}
+	/**
+	  * fill Table with empty value
+	  */
+	void setEmptyRowTable(QStandardItemModel *model, int numRow)
+	{
+		int columns  = model->columnCount();
+		int rowIndex = 0;
+		while (rowIndex <numRow)
+		{
+			for(int i =0;i<columns;i++)
+				model->setItem(rowIndex,i, new QStandardItem(tr("")));
+			rowIndex ++;
+		}
+	}
+
+	// START : ADD CLASS TAB
+	/**
+	  * load confif of list class and add class at the constructor
+	  */
+	void loadConfigClass()
+	{
+		addMemberModel = new QStandardItemModel(this);
+		ui.addMemberTable->setModel(addMemberModel);
+	}
+	/**
+	  * Load data to Add Class tab with two method (create, edit) : base on ClassId 
+	  * @param classId 0:create  #0: edit
+	  */
+	void loadDataAddClassTab(int classId)
+	{
+		if(classId ==0)
+		{
+			ui.courseNameLineEdit->setFocus();
+			QDate curDate = QDate::currentDate();
+			ui.regisdateEdit->setDate(curDate);
+			// Set up member table View
+			QList<QString> headerList;
+			headerList << "Name" << "Birth year" << "Others";
+			setHeaderTable(addMemberModel, headerList);
+			setEmptyRowTable(addMemberModel,7);
+			ui.addMemberTable->setColumnWidth(0,150);
+			ui.addMemberTable->setColumnWidth(1,60);
+			ui.addMemberTable->setColumnWidth(2,70);
+
+			MYSQL_RES *res = database::course_getAll(conn);
+			ui.courseComboBox->addItem(tr("Choose course"));
+			while(MYSQL_ROW row = mysql_fetch_row(res))
+				ui.courseComboBox->addItem(row[1]);
+		}
+	}
+	/**
+	  *	Fill Course info : able to delete material ( but not edit
+	  * @param courseIdStr : course_id --> to load data
+	  */
+	void fillDataCourseAddMember(QString courseIdStr)
+	{
+		MYSQL_RES *resCourseSkill = database::courseSkill_searchCourseId(conn,courseIdStr);
+		int skillIndex = 0;
+		while(MYSQL_ROW courseSkillRow = mysql_fetch_row(resCourseSkill))
+		{
+			MYSQL_ROW skillRow = database::skill_searchSkillId(conn,courseSkillRow[1]);
+			QLabel *skillLabel = new QLabel(tr("<b>")+skillRow[1]+tr("</b>"));
+			ui.courseInfoLayout->addWidget(skillLabel);
+			
+			QTableView *skillTable = new QTableView(ui.addClassTab);
+			QStandardItemModel *skillModel = new QStandardItemModel(ui.addClassTab);
+			skillTable->setModel(skillModel);
+			
+
+			// QTableView of each skill
+			int rowIndex = 0;
+			QList<QString> headerList;
+			headerList << "id" << "Material" << "Delete" ;
+			setHeaderTable(skillModel,headerList);
+
+			MYSQL_RES *resSkillMaterial = database::skillMaterial_searchSkillId(conn,courseSkillRow[1],courseIdStr);
+			while(MYSQL_ROW skillMaterialRow = mysql_fetch_row(resSkillMaterial))
+			{
+				MYSQL_ROW materialRow = database::material_searchMaterialId(conn,skillMaterialRow[1]);
+				skillModel->setItem(rowIndex,0, new QStandardItem(materialRow[0])); //id
+				skillModel->setItem(rowIndex,1, new QStandardItem(materialRow[1])); // material
+				
+				QPushButton *deleteButton = new QPushButton(ui.addClassTab);
+				QPixmap pixmap1("Resources/Delete_icon.png");
+				QIcon ButtonIcon1(pixmap1);
+				deleteButton->setIcon(ButtonIcon1);
+				QSignalMapper *signalMapper = new QSignalMapper(ui.addClassTab);
+				signalMapper->setMapping(deleteButton,materialRow[1]+tr(",")+QString::number(skillIndex));
+				QObject::connect(deleteButton,SIGNAL(clicked()),signalMapper,SLOT(map()));
+				QObject::connect(signalMapper,SIGNAL(mapped(QString)),this,SLOT(delMaterialTable(QString)));
+				skillTable->setIndexWidget(skillModel->index(rowIndex,2),deleteButton);
+
+				rowIndex++;
+			}
+			skillTable->setColumnWidth(0,50);
+			skillTable->setColumnWidth(1,250);
+			skillTable->setColumnWidth(2,50);
+
+			skillTableList.append(skillTable);
+			skillModelList.append(skillModel);
+			ui.courseInfoLayout->addWidget(skillTable);
+			skillIndex++;
+		}
+	}
+	// END   : ADD CLASS TAB
+
 	//  START :ADD COURSE TAB
 			/* STEP 1 - 2 : CLICK BUTTON1 SAVE */
 	void fillSkillsStep2() //edit + create
@@ -52,8 +171,8 @@ public:
 	void setup4Step2()// Main step 2 
 	{
 		/**
-		**	@parameter: method: "EDIT" or "CREATE"
-		*/
+		 * Setup data for step 2
+		 */
 		
 		fillSkillsStep2();
 		ui.line1_2->setVisible(true);
@@ -180,11 +299,11 @@ public:
 		return text;
 	}
 
+	/**
+	  * @param skillNID : "<skill>,<index>,<courseId>"
+	  */		
 	bool isAddMaterial(QString skillNIndex)
 	{
-	/**
-	**	@parameter: skillNID : "<skill>,<index>,<courseId>"
-	**/			
 		bool ok;
 		QStringList stringlist = skillNIndex.split(",");
 		QString skill = stringlist.at(0);
@@ -285,6 +404,7 @@ public:
 		courseMode = "CREATE";
 		skillsCourse.clear();
 		skillWidgets.clear();
+		ui.courseNameLineEdit->setFocus();
 	}
 	//  END :ADD COURSE TAB
 
@@ -292,26 +412,11 @@ public:
 	void loadListClassTab()
 	{
 		listClassModel = new QStandardItemModel(this); //2 Rows and 3 Columns
-		listClassModel->setHorizontalHeaderItem(0, new QStandardItem(QString("Class name")));
-		listClassModel->setHorizontalHeaderItem(1, new QStandardItem(QString("Res date")));
-		listClassModel->setHorizontalHeaderItem(2, new QStandardItem(QString("Member")));
-		listClassModel->setHorizontalHeaderItem(3, new QStandardItem(QString("Course")));
-		listClassModel->setHorizontalHeaderItem(4, new QStandardItem(QString("% day")));
-		listClassModel->setHorizontalHeaderItem(5, new QStandardItem(QString("% material")));
-
+		QList<QString> listHeader;
+		listHeader << "Class name" << "Res date" << "Member" << "Course" << "% day" << "% material";
+		setHeaderTable(listClassModel,listHeader);
 		// Add value to a cell in table
-		QStandardItem *firstRow = new QStandardItem(QString("ColumnValue"));
-		listClassModel->setItem(0,0,firstRow);
-
-		QStandardItem *row2 = new QStandardItem(QString("ColumnValue"));
-		listClassModel->setItem(0,1,row2);
-
-		QStandardItem *row3 = new QStandardItem(QString("ColumnValue"));
-		listClassModel->setItem(0,2,row3);
-
-		QStandardItem *row4 = new QStandardItem(QString("ColumnValue"));
-		listClassModel->setItem(0,3,row4);
-		 
+		setEmptyRowTable(listClassModel,5);
 		ui.listTable->setModel(listClassModel);
 	}
 	// END: LIST CLASS TAB
@@ -332,16 +437,15 @@ public:
 		skillString = skillString.mid(0,skillString.length()-1);  // Skill of that course
 		return skillString;
 	}
-
+	/**
+	  * Fill to the next rows of QTableList
+	  * @param res_set: data need to be filled
+	  * @param listCourseTable : QTableView to filled data
+	  * @param courseModel : Model of QTableView
+      * @param indexRow    : index of row to continue insert
+	  */
 	void fillListCourse(MYSQL_RES *res_set,QTableView *listCourseTable,QStandardItemModel *courseModel, int indexRow)
 	{
-	/*
-	** Fill to the next rows of QTableList
-	** @params: res_set: data need to be filled
-	**			listCourseTable : QTableView to filled data
-	**			courseModel : Model of QTableView
-	**			indexRow    : index of row to continue insert
-	*/
 		MYSQL_ROW row;
 		int indexTemp = indexRow;
 		QList<QString> courseIdList;
@@ -392,20 +496,16 @@ public:
 			listCourseTable->setIndexWidget(courseModel->index(i,4),deleteButton);
 		}
 	}
-	void fillHeaderListCourse(QStandardItemModel *courseModel)
-	{
-		courseModel->setHorizontalHeaderItem(0,new QStandardItem(tr("Course Name")));
-		courseModel->setHorizontalHeaderItem(1,new QStandardItem(tr("Skill")));
-		courseModel->setHorizontalHeaderItem(2,new QStandardItem(tr("Material")));
-		courseModel->setHorizontalHeaderItem(3,new QStandardItem(tr("Edit")));
-		courseModel->setHorizontalHeaderItem(4,new QStandardItem(tr("Delete")));
-	}
-
+	
 	void loadListCourseTab()
 	{
 		listCourseModel = new QStandardItemModel(ui.listCourseTab);
 		ui.listCourseTable->setModel(listCourseModel);
-		fillHeaderListCourse(listCourseModel);
+
+		QList<QString> headerList;
+		headerList << "Course Name" << "Skill" << "Material" << "Edit" << "Delete";
+		setHeaderTable(listCourseModel, headerList);
+	
 		MYSQL_RES* res_set = database::course_getAll(conn);
 		fillListCourse(res_set,ui.listCourseTable,listCourseModel,0);
 	}
@@ -416,6 +516,63 @@ public:
 
 private:
 	Ui::MyClassClass ui;
+// START : ADD CLASS TAB
+	private slots:
+		/**
+		  * delete material in skill box info
+		  * @param materialNSkillIndex : "<material name> , <skill Index>"
+		  * skillindex : in skillModelList and skillTableList
+		  */
+		void delMaterialTable(QString materialNSkillIndex)
+		{
+			QStringList arr    = materialNSkillIndex.split(",");
+			QString material   = arr.at(0);
+			QString skillIndex = arr.at(1);
+			int skillIndexInt  = skillIndex.toInt();
+			
+			QStandardItemModel *model = skillModelList.at(skillIndexInt);
+			int rowCount			  = model->rowCount();
+			for(int i=0;i<rowCount;i++)
+			{
+				QString materialCom = model->data(model->index(i,1),Qt::DisplayRole).toString();
+				if(material == materialCom)
+				{
+					model->removeRow(i);
+					return;
+				}
+			}
+		}
+
+		void addMemberAction()
+		{
+
+		}
+
+		void saveClassAction()
+		{
+
+		}
+
+		void courseComboAction(QString courseStr)
+		{
+			if(courseStr == "Choose course")
+			{
+				clearItemsLayout(ui.courseInfoLayout);
+				ui.courseInfoLabel->setText(tr(""));
+				skillModelList.clear();
+				skillTableList.clear();
+				return;
+			}
+			ui.courseClassLabel->setText(courseStr);
+			clearItemsLayout(ui.courseInfoLayout);
+			MYSQL_ROW courseRow = database::course_searchName(conn,courseStr);
+			QString courseIdStr = courseRow[0];
+			fillDataCourseAddMember(courseIdStr);
+			ui.courseInfoLabel->setText("<b>Course "+courseStr+" info</b>");
+		}
+// END   : ADD CLASS TAB
+
+
 // ADD COURSE TAB
 	private slots:	
 		// START refresh (add more action)
@@ -532,11 +689,11 @@ private:
 		// END STEP 2 action
 
 		//STEP 3 action
+		/**
+		  *	@param skillNIndex : "<skill>,<index>" (index: index trong skillWidgets [thu tu skills])
+		  */	
 		void listMaterial(QString skillNIndex)
 		{
-		/**
-		**	@parameter: skillNIndex : "<skill>,<index>" (index: index trong skillWidgets [thu tu skills])
-		**/		
 			QStringList stringlist = skillNIndex.split(",");
 			QString skill = stringlist.at(0);
 			QString index = stringlist.at(1);
@@ -570,12 +727,11 @@ private:
 			}
 			int c = 1;
 		}
-
+		/**
+		  * @param skillNID : "<skill>,<id>"
+		  */	
 		void addMaterial(QString skillNIndex)
 		{			
-		/**
-		**	@parameter: skillNID : "<skill>,<id>"
-		**/		
 			bool isAdd = isAddMaterial(skillNIndex);
 			while(isAdd ==true)
 			{
@@ -634,7 +790,9 @@ private:
 			MYSQL_RES *res = database::course_searchPartName(conn,textSearch);
 			//delete all row and fill data
 			listCourseModel->clear();
-			fillHeaderListCourse(listCourseModel);
+			QList<QString> headerList;
+			headerList << "Course Name" << "Skill" << "Material" << "Edit" << "Delete";
+			setHeaderTable(listCourseModel, headerList);
 			fillListCourse(res,ui.listCourseTable,listCourseModel,0);
 		}
 

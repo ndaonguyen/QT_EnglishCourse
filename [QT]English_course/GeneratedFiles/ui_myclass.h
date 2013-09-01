@@ -13,6 +13,8 @@
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
+#include <QtGui/QComboBox>
+#include <QtGui/QDateEdit>
 #include <QtGui/QFrame>
 #include <QtGui/QGroupBox>
 #include <QtGui/QHBoxLayout>
@@ -49,6 +51,23 @@ public:
     QLineEdit *searchLineEdit;
     QTableView *listTable;
     QWidget *addClassTab;
+    QFrame *line;
+    QLabel *classNameLabel;
+    QLineEdit *classNameLineEdit;
+    QLabel *regisDayLabel;
+    QLabel *totalDayLabel;
+    QLineEdit *totalDateLineEdit;
+    QLabel *memberLabel;
+    QLabel *chooseCourseLabel;
+    QComboBox *courseComboBox;
+    QDateEdit *regisdateEdit;
+    QLabel *courseClassLabel;
+    QLabel *courseInfoLabel;
+    QWidget *courseInfoWidget;
+    QWidget *verticalLayoutWidget_4;
+    QVBoxLayout *courseInfoLayout;
+    QPushButton *pushButton_2;
+    QTableView *addMemberTable;
     QWidget *listCourseTab;
     QTableView *listCourseTable;
     QLineEdit *searchCourseLineEdit;
@@ -146,6 +165,62 @@ public:
         mainTab->addTab(listClassTab, QString());
         addClassTab = new QWidget();
         addClassTab->setObjectName(QString::fromUtf8("addClassTab"));
+        line = new QFrame(addClassTab);
+        line->setObjectName(QString::fromUtf8("line"));
+        line->setGeometry(QRect(430, 20, 20, 521));
+        line->setFrameShape(QFrame::VLine);
+        line->setFrameShadow(QFrame::Sunken);
+        classNameLabel = new QLabel(addClassTab);
+        classNameLabel->setObjectName(QString::fromUtf8("classNameLabel"));
+        classNameLabel->setGeometry(QRect(20, 40, 71, 16));
+        classNameLineEdit = new QLineEdit(addClassTab);
+        classNameLineEdit->setObjectName(QString::fromUtf8("classNameLineEdit"));
+        classNameLineEdit->setGeometry(QRect(110, 40, 291, 20));
+        regisDayLabel = new QLabel(addClassTab);
+        regisDayLabel->setObjectName(QString::fromUtf8("regisDayLabel"));
+        regisDayLabel->setGeometry(QRect(20, 80, 91, 16));
+        totalDayLabel = new QLabel(addClassTab);
+        totalDayLabel->setObjectName(QString::fromUtf8("totalDayLabel"));
+        totalDayLabel->setGeometry(QRect(20, 120, 91, 16));
+        totalDateLineEdit = new QLineEdit(addClassTab);
+        totalDateLineEdit->setObjectName(QString::fromUtf8("totalDateLineEdit"));
+        totalDateLineEdit->setGeometry(QRect(110, 120, 291, 20));
+        memberLabel = new QLabel(addClassTab);
+        memberLabel->setObjectName(QString::fromUtf8("memberLabel"));
+        memberLabel->setGeometry(QRect(20, 160, 91, 16));
+        chooseCourseLabel = new QLabel(addClassTab);
+        chooseCourseLabel->setObjectName(QString::fromUtf8("chooseCourseLabel"));
+        chooseCourseLabel->setGeometry(QRect(20, 430, 91, 16));
+        courseComboBox = new QComboBox(addClassTab);
+        courseComboBox->setObjectName(QString::fromUtf8("courseComboBox"));
+        courseComboBox->setGeometry(QRect(110, 460, 121, 22));
+        regisdateEdit = new QDateEdit(addClassTab);
+        regisdateEdit->setObjectName(QString::fromUtf8("regisdateEdit"));
+        regisdateEdit->setGeometry(QRect(109, 80, 151, 22));
+        courseClassLabel = new QLabel(addClassTab);
+        courseClassLabel->setObjectName(QString::fromUtf8("courseClassLabel"));
+        courseClassLabel->setGeometry(QRect(110, 430, 251, 16));
+        courseInfoLabel = new QLabel(addClassTab);
+        courseInfoLabel->setObjectName(QString::fromUtf8("courseInfoLabel"));
+        courseInfoLabel->setGeometry(QRect(450, 10, 231, 16));
+        courseInfoWidget = new QWidget(addClassTab);
+        courseInfoWidget->setObjectName(QString::fromUtf8("courseInfoWidget"));
+        courseInfoWidget->setGeometry(QRect(450, 40, 401, 501));
+        verticalLayoutWidget_4 = new QWidget(courseInfoWidget);
+        verticalLayoutWidget_4->setObjectName(QString::fromUtf8("verticalLayoutWidget_4"));
+        verticalLayoutWidget_4->setGeometry(QRect(0, 10, 401, 481));
+        courseInfoLayout = new QVBoxLayout(verticalLayoutWidget_4);
+        courseInfoLayout->setSpacing(6);
+        courseInfoLayout->setContentsMargins(11, 11, 11, 11);
+        courseInfoLayout->setObjectName(QString::fromUtf8("courseInfoLayout"));
+        courseInfoLayout->setContentsMargins(0, 0, 0, 0);
+        pushButton_2 = new QPushButton(addClassTab);
+        pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
+        pushButton_2->setGeometry(QRect(320, 550, 241, 23));
+        pushButton_2->setIcon(icon4);
+        addMemberTable = new QTableView(addClassTab);
+        addMemberTable->setObjectName(QString::fromUtf8("addMemberTable"));
+        addMemberTable->setGeometry(QRect(110, 160, 301, 251));
         mainTab->addTab(addClassTab, QString());
         listCourseTab = new QWidget();
         listCourseTab->setObjectName(QString::fromUtf8("listCourseTab"));
@@ -334,8 +409,10 @@ public:
         QObject::connect(pushButton, SIGNAL(clicked()), MyClassClass, SLOT(refreshCourseListAction()));
         QObject::connect(searchCourseButton, SIGNAL(clicked()), MyClassClass, SLOT(searchCourseAction()));
         QObject::connect(searchCourseLineEdit, SIGNAL(returnPressed()), MyClassClass, SLOT(searchCourseAction()));
+        QObject::connect(pushButton_2, SIGNAL(clicked()), MyClassClass, SLOT(saveClassAction()));
+        QObject::connect(courseComboBox, SIGNAL(activated(QString)), MyClassClass, SLOT(courseComboAction(QString)));
 
-        mainTab->setCurrentIndex(2);
+        mainTab->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(MyClassClass);
@@ -365,6 +442,14 @@ public:
 #endif // QT_NO_TOOLTIP
         searchButton->setText(QApplication::translate("MyClassClass", "Search", 0, QApplication::UnicodeUTF8));
         mainTab->setTabText(mainTab->indexOf(listClassTab), QApplication::translate("MyClassClass", "List class", 0, QApplication::UnicodeUTF8));
+        classNameLabel->setText(QApplication::translate("MyClassClass", "Class name:", 0, QApplication::UnicodeUTF8));
+        regisDayLabel->setText(QApplication::translate("MyClassClass", "Registration day", 0, QApplication::UnicodeUTF8));
+        totalDayLabel->setText(QApplication::translate("MyClassClass", "Total days", 0, QApplication::UnicodeUTF8));
+        memberLabel->setText(QApplication::translate("MyClassClass", "Members", 0, QApplication::UnicodeUTF8));
+        chooseCourseLabel->setText(QApplication::translate("MyClassClass", "Choose course", 0, QApplication::UnicodeUTF8));
+        courseClassLabel->setText(QString());
+        courseInfoLabel->setText(QString());
+        pushButton_2->setText(QApplication::translate("MyClassClass", "SAVE", 0, QApplication::UnicodeUTF8));
         mainTab->setTabText(mainTab->indexOf(addClassTab), QApplication::translate("MyClassClass", "Add class", 0, QApplication::UnicodeUTF8));
         searchCourseButton->setText(QApplication::translate("MyClassClass", "Search", 0, QApplication::UnicodeUTF8));
         pushButton->setText(QString());
