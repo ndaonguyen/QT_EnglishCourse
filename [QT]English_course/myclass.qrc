@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="MyClass">
     <file>Resources/refresh_icon.png</file>
+    <file>Resources/cancel_icon.png</file>
     <file>Resources/addIcon.jpg</file>
     <file>Resources/saveButtton.jpg</file>
     <file>Resources/add-icon.png</file>

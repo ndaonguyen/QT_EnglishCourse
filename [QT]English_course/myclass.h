@@ -72,6 +72,14 @@ public:
 	{
 		if(classId ==0)
 		{
+			ui.classNameLineEdit->setText("");
+			ui.totalDateLineEdit->setText("");
+			addMemberModel->clear();
+			ui.otherLineEdit->setText("");
+			ui.classComboBox->clear();
+			ui.courseClassLabel->setText("");
+			clearItemsLayout(ui.courseInfoLayout);
+
 			ui.courseNameLineEdit->setFocus();
 			QDate curDate = QDate::currentDate();
 			ui.regisdateEdit->setDate(curDate);
@@ -85,16 +93,17 @@ public:
 			ui.addMemberTable->setColumnWidth(2,70);
 
 			MYSQL_RES *res = database::course_getAll(conn);
-			ui.courseComboBox->addItem(tr("Choose course"));
+			ui.classComboBox->addItem(tr("Choose course"));
 			while(MYSQL_ROW row = mysql_fetch_row(res))
-				ui.courseComboBox->addItem(row[1]);
+				ui.classComboBox->addItem(row[1]);
+			ui.classComboBox->setCurrentIndex(0);
 		}
 	}
 	/**
 	  *	Fill Course info : able to delete material ( but not edit
 	  * @param courseIdStr : course_id --> to load data
 	  */
-	void fillDataCourseAddMember(QString courseIdStr)
+	void fillMaterial4AddMember(QString courseIdStr)
 	{
 		MYSQL_RES *resCourseSkill = database::courseSkill_searchCourseId(conn,courseIdStr);
 		int skillIndex = 0;
@@ -112,7 +121,7 @@ public:
 			// QTableView of each skill
 			int rowIndex = 0;
 			QList<QString> headerList;
-			headerList << "id" << "Material" << "Delete" ;
+			headerList << "ID" << "Material" << "Delete" ;
 			setHeaderTable(skillModel,headerList);
 
 			MYSQL_RES *resSkillMaterial = database::skillMaterial_searchSkillId(conn,courseSkillRow[1],courseIdStr);
@@ -518,6 +527,11 @@ private:
 	Ui::MyClassClass ui;
 // START : ADD CLASS TAB
 	private slots:
+		void cancelClassAction()
+		{
+			loadDataAddClassTab(0);
+		}
+			
 		/**
 		  * delete material in skill box info
 		  * @param materialNSkillIndex : "<material name> , <skill Index>"
@@ -543,14 +557,77 @@ private:
 			}
 		}
 
-		void addMemberAction()
-		{
-
-		}
-
+		/**
+		  * Check data before saving
+		  */
 		void saveClassAction()
 		{
-
+			// checl data
+			int rowMember = addMemberModel->rowCount();
+			if (ui.classNameLineEdit->text()=="")
+			{
+				QMessageBox::warning(this,tr("Class name"),tr("Please fill the blank!!"));
+				ui.classNameLineEdit->setFocus();
+				return;
+			}
+			else if(ui.totalDateLineEdit->text()=="") // check if a number
+			{
+				QMessageBox::warning(this,tr("Total days"),tr("Please fill the blank!!"));
+				ui.totalDateLineEdit->setFocus();
+				return;
+			}
+			else if(rowMember<1) // sai ne
+			{	
+				QMessageBox::warning(this,tr("Add Member"),tr("Please fill the member info!!"));
+				return;
+			}
+			else if(ui.courseClassLabel->text()=="")
+			{
+				QMessageBox::warning(this,tr("Choose Course"),tr("Please select the suitable course!!"));
+				return;
+			}
+			else  // SAVE
+			{
+				QList<QString> classListInfo;
+	//			QDate date = ui.regisdateEdit->date();
+	//			QString text = date.toString("yyyy-MM-dd");
+				
+				classListInfo << ui.classNameLineEdit->text() << ui.regisdateEdit->date().toString("yyyy-MM-dd") <<ui.totalDateLineEdit->text() << ui.otherLineEdit->text();
+				int classId = database::class_saveAction(conn,classListInfo);
+				if(classId !=-1)
+				{
+					//save members
+					for(int i = 0;i<rowMember;i++)
+					{
+						QString memberName = addMemberModel->data(addMemberModel->index(i,0),Qt::DisplayRole).toString().trimmed();
+						if(memberName != "")
+						{
+							QString birthYear = addMemberModel->data(addMemberModel->index(i,1),Qt::DisplayRole).toString().trimmed();
+							QString note      = addMemberModel->data(addMemberModel->index(i,2),Qt::DisplayRole).toString().trimmed();
+							QList<QString> memberListInfo;
+							memberListInfo << memberName << birthYear << note;
+							int memberId = database::member_saveAction(conn,memberListInfo);
+							if(memberId != -1)
+								database::classMember_saveAction(conn,QString::number(classId),QString::number(memberId));
+						}
+					}
+					//save material
+					int skillNum = skillModelList.count();
+					for(int i =0;i<skillNum;i++)
+					{
+					//	QList<QStandardItemModel*> skillModelList;
+						QStandardItemModel *skillModel = skillModelList.at(i);
+						int materialRow                = skillModel->rowCount();
+						for(int j=0;j<materialRow;j++)
+						{
+							QString materialId = skillModel->data(skillModel->index(j,0),Qt::DisplayRole).toString().trimmed();
+							database::materialUse_saveAction(conn,materialId,QString::number(classId));
+						}
+					}
+				}
+				QWidget * tab = ui.mainTab->widget(0);
+				ui.mainTab->setCurrentWidget(tab);
+			}
 		}
 
 		void courseComboAction(QString courseStr)
@@ -559,6 +636,7 @@ private:
 			{
 				clearItemsLayout(ui.courseInfoLayout);
 				ui.courseInfoLabel->setText(tr(""));
+				ui.courseClassLabel->setText(tr(""));
 				skillModelList.clear();
 				skillTableList.clear();
 				return;
@@ -567,7 +645,7 @@ private:
 			clearItemsLayout(ui.courseInfoLayout);
 			MYSQL_ROW courseRow = database::course_searchName(conn,courseStr);
 			QString courseIdStr = courseRow[0];
-			fillDataCourseAddMember(courseIdStr);
+			fillMaterial4AddMember(courseIdStr);
 			ui.courseInfoLabel->setText("<b>Course "+courseStr+" info</b>");
 		}
 // END   : ADD CLASS TAB

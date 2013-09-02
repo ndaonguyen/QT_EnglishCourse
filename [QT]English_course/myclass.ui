@@ -160,7 +160,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>430</y>
+        <y>470</y>
         <width>91</width>
         <height>16</height>
        </rect>
@@ -169,11 +169,11 @@
        <string>Choose course</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="courseComboBox">
+     <widget class="QComboBox" name="classComboBox">
       <property name="geometry">
        <rect>
         <x>110</x>
-        <y>460</y>
+        <y>500</y>
         <width>121</width>
         <height>22</height>
        </rect>
@@ -193,7 +193,7 @@
       <property name="geometry">
        <rect>
         <x>110</x>
-        <y>430</y>
+        <y>470</y>
         <width>251</width>
         <height>16</height>
        </rect>
@@ -236,13 +236,13 @@
        <layout class="QVBoxLayout" name="courseInfoLayout"/>
       </widget>
      </widget>
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="saveButton_2">
       <property name="geometry">
        <rect>
-        <x>320</x>
-        <y>550</y>
+        <x>130</x>
+        <y>552</y>
         <width>241</width>
-        <height>23</height>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
@@ -261,6 +261,46 @@
         <width>301</width>
         <height>251</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="otherLabel">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>430</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Others</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="otherLineEdit">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>430</y>
+        <width>291</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cancelButton">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>552</y>
+        <width>221</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>CANCEL</string>
+      </property>
+      <property name="icon">
+       <iconset resource="myclass.qrc">
+        <normaloff>:/MyClass/Resources/cancel_icon.png</normaloff>:/MyClass/Resources/cancel_icon.png</iconset>
       </property>
      </widget>
     </widget>
@@ -1113,14 +1153,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>saveButton_2</sender>
    <signal>clicked()</signal>
    <receiver>MyClassClass</receiver>
    <slot>saveClassAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>414</x>
-     <y>645</y>
+     <x>226</x>
+     <y>669</y>
     </hint>
     <hint type="destinationlabel">
      <x>419</x>
@@ -1129,18 +1169,34 @@
    </hints>
   </connection>
   <connection>
-   <sender>courseComboBox</sender>
+   <sender>classComboBox</sender>
    <signal>activated(QString)</signal>
    <receiver>MyClassClass</receiver>
    <slot>courseComboAction(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>162</x>
-     <y>560</y>
+     <x>164</x>
+     <y>608</y>
     </hint>
     <hint type="destinationlabel">
      <x>169</x>
      <y>734</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>cancelClassAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>662</x>
+     <y>653</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>558</x>
+     <y>720</y>
     </hint>
    </hints>
   </connection>
@@ -1166,5 +1222,6 @@
   <slot>saveClassAction()</slot>
   <slot>addMemberAction()</slot>
   <slot>courseComboAction(QString)</slot>
+  <slot>cancelClassAction()</slot>
  </slots>
 </ui>

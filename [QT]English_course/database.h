@@ -499,7 +499,99 @@ public:
 		}
 		return -1;
 	}
+	// CLASS Table
+	static int class_saveAction(MYSQL *connect, QList<QString> listinfo)
+	{
+	/**
+	** @parameter : listinfo info of Class in order	
+	** @return: id inserted
+	*/
+		QString numLeaningDay = "0";
+		QString query = "INSERT INTO `english_course`.`class` VALUES(NULL,'"+listinfo.at(0)+"','"+listinfo.at(1)+"','"+listinfo.at(2)+"','"+numLeaningDay+"','"+listinfo.at(3)+"')";
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			return class_getMaxId(connect);
+		}
+		return -1;
+	}
+	static int class_getMaxId(MYSQL *connect)
+	{
+		QString query = "SELECT MAX(id) FROM `english_course`.`class`";
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			MYSQL_RES *res_set;
+			MYSQL_ROW row;
 
+			res_set = mysql_store_result(connect);
+			row     = mysql_fetch_row(res_set);
+			return atoi(row[0]);
+		}
+		return -1;
+	}
+
+	//CLASS MEMBER
+		static int member_saveAction(MYSQL *connect, QList<QString> listinfo)
+	{
+	/**
+	** @parameter : listinfo info of Class in order	
+	** @return: id inserted
+	*/
+		QString numLeaningDay = "0";
+		QString query = "INSERT INTO `english_course`.`member` VALUES(NULL,'"+listinfo.at(0)+"','"+listinfo.at(1)+"','"+listinfo.at(2)+"')";
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			return member_getMaxId(connect);
+		}
+		return -1;
+	}
+	static int member_getMaxId(MYSQL *connect)
+	{
+		QString query = "SELECT MAX(id) FROM `english_course`.`member`";
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			MYSQL_RES *res_set;
+			MYSQL_ROW row;
+
+			res_set = mysql_store_result(connect);
+			row     = mysql_fetch_row(res_set);
+			return atoi(row[0]);
+		}
+		return -1;
+	}
+
+	// CLASS_MEMBER table
+	static int classMember_saveAction(MYSQL *connect,QString idClass, QString idMember)
+	{
+		QString query = "INSERT INTO `english_course`.`class_member` VALUE("+idClass+","+idMember+")";
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			return courseSkill_getMaxSkillID(connect);
+		}
+		return -1;
+	}
+
+	// MATERIALUSE TABLE
+	static int materialUse_saveAction(MYSQL *connect,QString materialId, QString classId)
+	{
+		QString query = "INSERT INTO `english_course`.`materialuse` VALUE("+materialId+","+classId+",0)";
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			return courseSkill_getMaxSkillID(connect);
+		}
+		return -1;
+	}
 };
 
 
