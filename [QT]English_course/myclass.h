@@ -12,6 +12,7 @@
 #include "ui_myclass.h"
 #include "database.h"
 
+
 class MyClass : public QMainWindow
 {
 	Q_OBJECT
@@ -56,6 +57,19 @@ public:
 	}
 
 	// START : ADD CLASS TAB
+	bool isNumber(QString strCheck)
+	{
+		int strLen = strCheck.length();
+		if(strLen==0)
+			return false;
+		for(int i=0;i<strLen;i++)
+		{
+			QChar ch = strCheck.at(i);
+			if(ch.isDigit() == false)
+				return false;
+		}
+		return true;
+	}
 	/**
 	  * load confif of list class and add class at the constructor
 	  */
@@ -117,7 +131,6 @@ public:
 			QStandardItemModel *skillModel = new QStandardItemModel(ui.addClassTab);
 			skillTable->setModel(skillModel);
 			
-
 			// QTableView of each skill
 			int rowIndex = 0;
 			QList<QString> headerList;
@@ -355,7 +368,6 @@ public:
 		QObject::connect(ui.courseNameLineEdit,SIGNAL(returnPressed()),this, SLOT(step1SaveAction()));
 		QObject::connect(ui.saveButton2,SIGNAL(clicked()),this, SLOT(step2SaveAction()));
 		QObject::connect(ui.saveCourseButton,SIGNAL(clicked()),this, SLOT(saveCourseAction()));
-
 	}
 
 	void loadConfigAddCourseTab()
@@ -570,15 +582,10 @@ private:
 				ui.classNameLineEdit->setFocus();
 				return;
 			}
-			else if(ui.totalDateLineEdit->text()=="") // check if a number
+			else if(ui.totalDateLineEdit->text()=="" || isNumber(ui.totalDateLineEdit->text())==false) // check if a number
 			{
-				QMessageBox::warning(this,tr("Total days"),tr("Please fill the blank!!"));
+				QMessageBox::warning(this,tr("Total days"),tr("Please fill the blank, and value is a NUMBER!!"));
 				ui.totalDateLineEdit->setFocus();
-				return;
-			}
-			else if(rowMember<1) // sai ne
-			{	
-				QMessageBox::warning(this,tr("Add Member"),tr("Please fill the member info!!"));
 				return;
 			}
 			else if(ui.courseClassLabel->text()=="")
@@ -586,20 +593,44 @@ private:
 				QMessageBox::warning(this,tr("Choose Course"),tr("Please select the suitable course!!"));
 				return;
 			}
-			else  // SAVE
+			else  
 			{
+				QList<QString> memberList;
+				bool haveMember = false;
+				int numMember = 0;
+				for(int i = 0;i<rowMember;i++) // check number in birthyear and check whether have member
+				{
+					QString birthYear = addMemberModel->data(addMemberModel->index(i,1),Qt::DisplayRole).toString().trimmed();
+					QString memberName = addMemberModel->data(addMemberModel->index(i,0),Qt::DisplayRole).toString().trimmed();
+					if(memberName!="")
+					{
+						memberList.append(memberName);
+						haveMember = true;
+						numMember++;
+						if( birthYear.length()>0 && isNumber(birthYear) == false)
+						{
+							QMessageBox::warning(this,tr("Member infomation"),tr("Please fill a NUMBER for 'birth year' !!"));
+							ui.totalDateLineEdit->setFocus();
+							return;
+						}
+					}
+				}
+				// SAVE
+				if (haveMember == false) // check whether contain member
+				{
+					QMessageBox::warning(this,tr("Add Member"),tr("Please fill the member info!!"));
+					return;
+				}	
+
 				QList<QString> classListInfo;
-	//			QDate date = ui.regisdateEdit->date();
-	//			QString text = date.toString("yyyy-MM-dd");
-				
 				classListInfo << ui.classNameLineEdit->text() << ui.regisdateEdit->date().toString("yyyy-MM-dd") <<ui.totalDateLineEdit->text() << ui.otherLineEdit->text();
 				int classId = database::class_saveAction(conn,classListInfo);
 				if(classId !=-1)
 				{
 					//save members
-					for(int i = 0;i<rowMember;i++)
+					for(int i = 0;i<numMember;i++)
 					{
-						QString memberName = addMemberModel->data(addMemberModel->index(i,0),Qt::DisplayRole).toString().trimmed();
+						QString memberName = memberList.at(i);
 						if(memberName != "")
 						{
 							QString birthYear = addMemberModel->data(addMemberModel->index(i,1),Qt::DisplayRole).toString().trimmed();
