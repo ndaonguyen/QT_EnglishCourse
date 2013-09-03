@@ -557,6 +557,17 @@ public:
 		}
 		return -1;
 	}
+	static int class_deleteById(MYSQL *connect, QString classId)
+	{
+		QString query = "DELETE FROM `english_course`.`class` WHERE `id` =" + classId;
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			return 1;
+		}
+		return -1;
+	}
 	//MEMBER table
 	static int member_saveAction(MYSQL *connect, QList<QString> listinfo)
 	{
@@ -655,8 +666,19 @@ public:
 		}
 		return NULL;
 	}
+	static int classMember_deleteByClassId(MYSQL *connect, QString classId)
+	{
+		QString query = "DELETE FROM `english_course`.`class_member` WHERE `class_id` =" + classId;
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			return 1;
+		}
+		return -1;
+	}
 
-	static int classMember_deleteById(MYSQL *connect, QString memberId)
+	static int classMember_deleteByMemberId(MYSQL *connect, QString memberId)
 	{
 		QString query = "DELETE FROM `english_course`.`class_member` WHERE `member_id` =" + memberId;
 		std::string query2 = query.toStdString();
@@ -703,6 +725,17 @@ public:
 			MYSQL_RES *res_set = mysql_store_result(connect);
 			MYSQL_ROW row     = mysql_fetch_row(res_set);
 			return atoi(row[0]);
+		}
+		return -1;
+	}
+	static int materialUse_deleteByClassId(MYSQL *connect, QString classId)
+	{
+		QString query = "DELETE FROM `english_course`.`materialuse` WHERE `class_id` =" + classId;
+		std::string query2 = query.toStdString();
+		const char* query1 = query2.c_str();
+		if(mysql_query(connect,query1)==0)
+		{
+			return 1;
 		}
 		return -1;
 	}

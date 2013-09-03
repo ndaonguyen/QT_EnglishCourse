@@ -18,7 +18,6 @@ class MyClass : public QMainWindow
 private: 
 	MYSQL *conn;
 // COURSE info
-	QStandardItemModel *listClassModel;
 	QStandardItemModel *listCourseModel;
 	QString courseMode;
 	QString courseName; //Current course name ( initial = "" )
@@ -26,6 +25,7 @@ private:
 	QList<QString> skillsCourse;
 	QList<QListWidget *> skillWidgets;
 // CLASS info
+	QStandardItemModel *listClassModel;
 	QStandardItemModel *addMemberModel;
 	QList<QStandardItemModel*> skillModelList; // list contain material ( set current situation)
 	QList<QTableView*>  skillTableList; // list contain material 
@@ -105,7 +105,7 @@ public:
 			QList<QString> headerList;
 			headerList << "Name" << "Birth year" << "Others";
 			setHeaderTable(addMemberModel, headerList);
-			setEmptyRowTable(addMemberModel,7);
+			setEmptyRowTable(addMemberModel,5);
 			ui.addMemberTable->setColumnWidth(0,150);
 			ui.addMemberTable->setColumnWidth(1,60);
 			ui.addMemberTable->setColumnWidth(2,70);
@@ -736,9 +736,10 @@ private:
 						}
 					}
 				}
+				loadDataAddClassTab(0);
+				loadListClassTab();
 				QWidget * tab = ui.mainTab->widget(0);
 				ui.mainTab->setCurrentWidget(tab);
-				loadDataAddClassTab(0);
 			}
 		}
 
@@ -1074,9 +1075,33 @@ private:
 		{
 			int a = 0;
 		}
-		void deleteClassAction(QString classid)
+		void deleteClassAction(QString classId)
 		{
-			int a =0;
+			int ret = QMessageBox::warning(this, tr("Delete class"),tr("Please confirm !!"),
+                                QMessageBox::Ok | QMessageBox::Cancel);
+
+			if(ret == QMessageBox::Ok)
+			{
+				database::materialUse_deleteByClassId(conn,classId);
+				MYSQL_RES *resClassMember = database::classMember_searchClassId(conn, classId);
+				while(MYSQL_ROW classMemberRow = mysql_fetch_row(resClassMember))
+				{
+					QString memberId = classMemberRow[1];
+					database::member_deleteById(conn, memberId);
+				}
+				database::classMember_deleteByClassId(conn, classId);
+				database::class_deleteById(conn, classId);
+
+				// Delete row of QTableView
+				
+				int rowCount = listClassModel->rowCount();
+				for(int i =0; i < rowCount; i++)
+				{	
+					QString idCom = listClassModel->data(listClassModel->index(i,0), Qt::DisplayRole).toString();
+					if(classId == idCom.trimmed() )
+						listClassModel->removeRow(i);
+				}
+			}
 		}
 
 // END: LIST CLASS TAB

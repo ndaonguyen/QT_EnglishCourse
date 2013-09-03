@@ -75,7 +75,7 @@ private:
 			int numDelete = listMemberIdDelete.count();
 			for(int i =0;i<numDelete;i++)
 			{
-				database::classMember_deleteById(conn,listMemberIdDelete.at(i));
+				database::classMember_deleteByMemberId(conn,listMemberIdDelete.at(i));
 				database::member_deleteById(conn, listMemberIdDelete.at(i));
 			}
 			//save new data
