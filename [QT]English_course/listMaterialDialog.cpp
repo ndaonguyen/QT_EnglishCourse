@@ -38,7 +38,6 @@ listMaterialDialog::listMaterialDialog(QWidget *parent, QString skillName, int c
 			QPixmap pixmap("Resources/Delete_icon.png");
 			QIcon buttonIcon(pixmap);
 			button->setIcon(buttonIcon);
-
 			QSignalMapper *signalMapper = new QSignalMapper(this);
 			signalMapper->setMapping(button,materialId);
 			QObject::connect(button,SIGNAL(clicked()),signalMapper,SLOT(map()));

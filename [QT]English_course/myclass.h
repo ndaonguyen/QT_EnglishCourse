@@ -2,15 +2,14 @@
 #define MYCLASS_H
 
 #include <QtGui/QMainWindow>
-#include <QStandardItemModel>
 #include <QMessageBox>
 #include <QListWidgetItem>
 #include <QInputDialog>
-#include <QSignalMapper>
 #include "listMaterialDialog.h"
 #include "listCourseDialog.h"
+#include "listMemberDialog.h"
 #include "ui_myclass.h"
-#include "database.h"
+//#include "database.h"
 
 
 class MyClass : public QMainWindow
@@ -30,6 +29,7 @@ private:
 	QStandardItemModel *addMemberModel;
 	QList<QStandardItemModel*> skillModelList; // list contain material ( set current situation)
 	QList<QTableView*>  skillTableList; // list contain material 
+	QList<QString> skillIdList;
 public:
 	/**
 	  * set Header for QTableView
@@ -77,6 +77,9 @@ public:
 	{
 		addMemberModel = new QStandardItemModel(this);
 		ui.addMemberTable->setModel(addMemberModel);
+		
+		listClassModel = new QStandardItemModel(this); 
+		ui.listClassTable->setModel(listClassModel);
 	}
 	/**
 	  * Load data to Add Class tab with two method (create, edit) : base on ClassId 
@@ -86,6 +89,7 @@ public:
 	{
 		if(classId ==0)
 		{
+			ui.courseInfoLabel->setText("");
 			ui.classNameLineEdit->setText("");
 			ui.totalDateLineEdit->setText("");
 			addMemberModel->clear();
@@ -160,6 +164,7 @@ public:
 			skillTable->setColumnWidth(1,250);
 			skillTable->setColumnWidth(2,50);
 
+			skillIdList.append(skillRow[0]);
 			skillTableList.append(skillTable);
 			skillModelList.append(skillModel);
 			ui.courseInfoLayout->addWidget(skillTable);
@@ -432,13 +437,84 @@ public:
 	// START: LIST CLASS TAB
 	void loadListClassTab()
 	{
-		listClassModel = new QStandardItemModel(this); //2 Rows and 3 Columns
+		ui.refreshClassButton->setText("");
+		listClassModel->clear();
 		QList<QString> listHeader;
-		listHeader << "Class name" << "Res date" << "Member" << "Course" << "% day" << "% material";
+		listHeader << "ID" << "Class name" << "Registration day" << "Member" << "Course" << "% day" << "% material" << "EDIT" << "DELETE";
 		setHeaderTable(listClassModel,listHeader);
-		// Add value to a cell in table
 		setEmptyRowTable(listClassModel,5);
-		ui.listTable->setModel(listClassModel);
+		// resize columns
+		ui.listClassTable->setColumnWidth(0,30);
+		ui.listClassTable->setColumnWidth(1,180);
+		ui.listClassTable->setColumnWidth(2,100);
+		ui.listClassTable->setColumnWidth(3,75);
+		ui.listClassTable->setColumnWidth(4,75);
+		ui.listClassTable->setColumnWidth(5,75);
+		ui.listClassTable->setColumnWidth(6,75);
+		ui.listClassTable->setColumnWidth(7,75);
+		ui.listClassTable->setColumnWidth(8,75);
+		// fill value
+		MYSQL_RES *resClass = database::class_getAll(conn);
+		int rowCurrent = 0;
+		while(MYSQL_ROW classRow = mysql_fetch_row(resClass))
+		{
+			MYSQL_ROW courseRow = database::course_searchId(conn,classRow[2]);
+			QString cName  = courseRow[1];
+			QString regisDate   = classRow[3];
+			QString className   = classRow[1];
+			QString totalDay    = classRow[4];
+			QString learnDay    = classRow[5];
+
+			listClassModel->setItem(rowCurrent,0, new QStandardItem(classRow[0]));
+			listClassModel->setItem(rowCurrent,1, new QStandardItem(className));
+			listClassModel->setItem(rowCurrent,2, new QStandardItem(regisDate));
+			
+			QPushButton *memberListButton = new QPushButton(ui.listClassTable);
+			memberListButton->setText("Detail");
+			QPixmap pixmap("Resources/detail_icon.jpg");
+			QIcon ButtonIcon(pixmap);
+			memberListButton->setIcon(ButtonIcon);
+			QSignalMapper *memberListMapper = new QSignalMapper(ui.listClassTable);
+			memberListMapper->setMapping(memberListButton,classRow[0]);
+			QObject::connect(memberListButton,SIGNAL(clicked()),memberListMapper,SLOT(map()));
+			QObject::connect(memberListMapper,SIGNAL(mapped(QString)),this,SLOT(detailMemberAction(QString)));
+			ui.listClassTable->setIndexWidget(listClassModel->index(rowCurrent,3),memberListButton);
+			//courseName
+			listClassModel->setItem(rowCurrent,4,new QStandardItem(cName));
+				
+			int percentDay   = (learnDay.toInt()/totalDay.toInt())*100;
+			int allMater     = database::materialUse_countByClassId(conn,classRow[0]);
+			int useMater     = database::materialUse_countUseMaterialByClassId(conn,classRow[0]);
+			int percentMater = (useMater/allMater)*100;
+
+			listClassModel->setItem(rowCurrent,5,new QStandardItem(QString::number(percentDay)));
+			listClassModel->setItem(rowCurrent,6,new QStandardItem(QString::number(percentMater)));
+
+			QPushButton *editClassButton = new QPushButton(ui.listClassTable);
+			editClassButton->setText("Edit");
+			QPixmap pixmap1("Resources/edit.jpg");
+			QIcon ButtonIcon1(pixmap1);
+			editClassButton->setIcon(ButtonIcon1);
+			QSignalMapper *editClassMapper = new QSignalMapper(ui.listClassTable);
+			editClassMapper->setMapping(editClassButton,classRow[0]);
+			QObject::connect(editClassButton,SIGNAL(clicked()),editClassMapper,SLOT(map()));
+			QObject::connect(editClassMapper,SIGNAL(mapped(QString)),this,SLOT(editClassAction(QString)));
+			ui.listClassTable->setIndexWidget(listClassModel->index(rowCurrent,7),editClassButton);
+
+			QPushButton *deleteClassButton = new QPushButton(ui.listClassTable);
+			deleteClassButton->setText("Delete");
+			QPixmap pixmap2("Resources/Delete_icon.png");
+			QIcon ButtonIcon2(pixmap2);
+			deleteClassButton->setIcon(ButtonIcon2);
+			QSignalMapper *deleteClassMapper = new QSignalMapper(ui.listClassTable);
+			deleteClassMapper->setMapping(deleteClassButton,classRow[0]);
+			QObject::connect(deleteClassButton,SIGNAL(clicked()),deleteClassMapper,SLOT(map()));
+			QObject::connect(deleteClassMapper,SIGNAL(mapped(QString)),this,SLOT(deleteClassAction(QString)));
+			ui.listClassTable->setIndexWidget(listClassModel->index(rowCurrent,8),deleteClassButton);
+
+			rowCurrent++;
+		}
+		
 	}
 	// END: LIST CLASS TAB
 
@@ -615,13 +691,13 @@ private:
 						}
 					}
 				}
-				// SAVE
 				if (haveMember == false) // check whether contain member
 				{
 					QMessageBox::warning(this,tr("Add Member"),tr("Please fill the member info!!"));
 					return;
 				}	
 
+				// SAVE
 				QList<QString> classListInfo;
 				classListInfo << ui.classNameLineEdit->text() << ui.regisdateEdit->date().toString("yyyy-MM-dd") <<ui.totalDateLineEdit->text() << ui.otherLineEdit->text();
 				int classId = database::class_saveAction(conn,classListInfo);
@@ -642,6 +718,11 @@ private:
 								database::classMember_saveAction(conn,QString::number(classId),QString::number(memberId));
 						}
 					}
+					//edit course_id to class table
+					QString courseName  = ui.courseClassLabel->text();
+					MYSQL_ROW courseRow = database::course_searchName(conn,courseName);
+					database::class_editCourseIdById(conn,QString::number(classId),courseRow[0]);
+
 					//save material
 					int skillNum = skillModelList.count();
 					for(int i =0;i<skillNum;i++)
@@ -652,12 +733,13 @@ private:
 						for(int j=0;j<materialRow;j++)
 						{
 							QString materialId = skillModel->data(skillModel->index(j,0),Qt::DisplayRole).toString().trimmed();
-							database::materialUse_saveAction(conn,materialId,QString::number(classId));
+							database::materialUse_saveAction(conn,materialId,QString::number(classId),skillIdList.at(i));
 						}
 					}
 				}
 				QWidget * tab = ui.mainTab->widget(0);
 				ui.mainTab->setCurrentWidget(tab);
+				loadDataAddClassTab(0);
 			}
 		}
 
@@ -670,6 +752,7 @@ private:
 				ui.courseClassLabel->setText(tr(""));
 				skillModelList.clear();
 				skillTableList.clear();
+				skillIdList.clear();
 				return;
 			}
 			ui.courseClassLabel->setText(courseStr);
@@ -976,7 +1059,28 @@ private:
 						listCourseModel->removeRow(i);
 			}
 		}
+// START: LIST CLASS TAB
+	private slots:
+		void refreshClassListAction()
+		{
+			loadListClassTab();
+		}
+		void detailMemberAction(QString classId)
+		{
+			int a = 0;
+			listMemberDialog *dialog = new listMemberDialog(this,classId);
+			dialog->exec();
+		}
+		void editClassAction(QString classId)
+		{
+			int a = 0;
+		}
+		void deleteClassAction(QString classid)
+		{
+			int a =0;
+		}
 
+// END: LIST CLASS TAB
 };
 
 #endif // MYCLASS_H

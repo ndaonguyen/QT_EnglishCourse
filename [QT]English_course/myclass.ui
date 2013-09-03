@@ -27,7 +27,7 @@
      <string/>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="listClassTab">
      <attribute name="title">
@@ -46,7 +46,7 @@
        <string>Search</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="searchLineEdit">
+     <widget class="QLineEdit" name="searchClassLineEdit">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -56,14 +56,37 @@
        </rect>
       </property>
      </widget>
-     <widget class="QTableView" name="listTable">
+     <widget class="QTableView" name="listClassTable">
       <property name="geometry">
        <rect>
         <x>20</x>
         <y>50</y>
-        <width>691</width>
+        <width>791</width>
         <height>541</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="refreshClassButton">
+      <property name="geometry">
+       <rect>
+        <x>820</x>
+        <y>0</y>
+        <width>61</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="myclass.qrc">
+        <normaloff>:/MyClass/Resources/refresh_icon.png</normaloff>:/MyClass/Resources/refresh_icon.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>40</width>
+        <height>40</height>
+       </size>
       </property>
      </widget>
     </widget>
@@ -341,7 +364,7 @@
        <string>Search</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="refreshCourseButton">
       <property name="geometry">
        <rect>
         <x>690</x>
@@ -1105,7 +1128,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>refreshCourseButton</sender>
    <signal>clicked()</signal>
    <receiver>MyClassClass</receiver>
    <slot>refreshCourseListAction()</slot>
@@ -1200,6 +1223,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>refreshClassButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>refreshClassListAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>864</x>
+     <y>130</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>824</x>
+     <y>703</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openFileAction()</slot>
@@ -1223,5 +1262,6 @@
   <slot>addMemberAction()</slot>
   <slot>courseComboAction(QString)</slot>
   <slot>cancelClassAction()</slot>
+  <slot>refreshClassListAction()</slot>
  </slots>
 </ui>
