@@ -19,7 +19,7 @@ listMemberDialog::listMemberDialog(QWidget *parent,QString classId)
 	
 	view->setColumnWidth(0,20);
 	view->setColumnWidth(1,90);
-	view->setColumnWidth(2,55);
+	view->setColumnWidth(2,57);
 	view->setColumnWidth(3,40);
 	view->setColumnWidth(4,30);
 	
@@ -50,16 +50,30 @@ listMemberDialog::listMemberDialog(QWidget *parent,QString classId)
 
 		rowCurrent++;
 	}
+	numOldMemberInDialog = rowCurrent;
 	topLeftLayout->addWidget(view);
 
+	QHBoxLayout *horizontalLayout = new QHBoxLayout();
 	QPushButton *saveButton = new QPushButton("Save");
 	QPixmap pixmap1("Resources/save_icon.png");
 	QIcon ButtonIcon1(pixmap1);
 	saveButton->setIcon(ButtonIcon1);
-	QObject::connect(saveButton,SIGNAL(clicked()),this,SLOT(saveListAction()));
-	topLeftLayout->addWidget(saveButton);
+	QSignalMapper *saveMapper = new QSignalMapper(this);
+	saveMapper->setMapping(saveButton,classId);
+	QObject::connect(saveButton,SIGNAL(clicked()),saveMapper,SLOT(map()));
+	QObject::connect(saveMapper,SIGNAL(mapped(QString)),this,SLOT(saveListAction(QString)));
+	
+	horizontalLayout->addWidget(saveButton);
+	
+	QPushButton *addMemberButton = new QPushButton("Add Member");
+	QPixmap pixmap("Resources/add-icon.png");
+	QIcon ButtonIcon(pixmap);
+	addMemberButton->setIcon(ButtonIcon);
+	QObject::connect(addMemberButton,SIGNAL(clicked()),this,SLOT(addMemberAction()));
+	horizontalLayout->addWidget(addMemberButton);
 
 	setLayout(topLeftLayout);
+	topLeftLayout->addLayout(horizontalLayout);
 	setWindowTitle(tr("Member list"));
 	setFixedHeight(sizeHint().height());
 	

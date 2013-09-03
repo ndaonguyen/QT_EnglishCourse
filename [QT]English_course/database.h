@@ -564,7 +564,6 @@ public:
 	** @parameter : listinfo info of Class in order	
 	** @return: id inserted
 	*/
-		QString numLeaningDay = "0";
 		QString query = "INSERT INTO `english_course`.`member` VALUES(NULL,'"+listinfo.at(0)+"','"+listinfo.at(1)+"','"+listinfo.at(2)+"')";
 		std::string query2 = query.toStdString();
 		const char* query1 = query2.c_str();

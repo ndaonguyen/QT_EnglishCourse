@@ -686,7 +686,6 @@ private:
 						if( birthYear.length()>0 && isNumber(birthYear) == false)
 						{
 							QMessageBox::warning(this,tr("Member infomation"),tr("Please fill a NUMBER for 'birth year' !!"));
-							ui.totalDateLineEdit->setFocus();
 							return;
 						}
 					}
