@@ -10,7 +10,6 @@
 #include "listCourseDialog.h"
 #include "listMemberDialog.h"
 #include "ui_myclass.h"
-//#include "database.h"
 
 
 class MyClass : public QMainWindow
@@ -84,7 +83,6 @@ public:
 		ui.listClassTable->setModel(listClassModel);
 
 		classID =0;
-		ui.editMemberButton->setVisible(false);
 		ui.dayUseWidget->setVisible(false);
 	}
 	/**
@@ -99,7 +97,6 @@ public:
 			skillTableList.clear();
 			skillIdList.clear();
 
-			ui.editMemberButton->setVisible(false);
 			ui.dayUseWidget->setVisible(false);
 			ui.courseInfoLabel->setText("");
 			ui.classNameLineEdit->setText("");
@@ -117,10 +114,11 @@ public:
 			QList<QString> headerList;
 			headerList << "Name" << "Birth year" << "Others";
 			setHeaderTable(addMemberModel, headerList);
-			setEmptyRowTable(addMemberModel,5);
-			ui.addMemberTable->setColumnWidth(0,150);
+			setEmptyRowTable(addMemberModel,10);
+
+			ui.addMemberTable->setColumnWidth(0,110);
 			ui.addMemberTable->setColumnWidth(1,60);
-			ui.addMemberTable->setColumnWidth(2,70);
+			ui.addMemberTable->setColumnWidth(2,40);
 
 			MYSQL_RES *res = database::course_getAll(conn);
 			ui.classComboBox->addItem(tr("Choose course"));
@@ -131,8 +129,6 @@ public:
 		else
 		{
 			QString classIdStr = QString::number(classId);
-
-			ui.editMemberButton->setVisible(true);
 			ui.dayUseWidget->setVisible(true);
 			
 			MYSQL_ROW classRow = database::class_searchClassId(conn,classIdStr);
@@ -150,19 +146,31 @@ public:
 				ui.otherLineEdit->setText(classRow[6]);
 				
 				MYSQL_RES *resClassMember = database::classMember_searchClassId(conn, classIdStr); // member
-				int rowIndex=0;
+				addMemberModel->setHorizontalHeaderItem(3, new QStandardItem(tr("Delete")));
+				addMemberModel->setHorizontalHeaderItem(4, new QStandardItem(tr("ID")));
+				ui.addMemberTable->setColumnWidth(3,50);
+				ui.addMemberTable->setColumnWidth(4,30);
+				int rowIndex =0;
 				while(MYSQL_ROW classMemberRow = mysql_fetch_row(resClassMember))
 				{
 					MYSQL_ROW memberRow = database::member_searchMemberId(conn,classMemberRow[1]);
 					addMemberModel->setItem(rowIndex,0,new QStandardItem(memberRow[1]));
 					addMemberModel->setItem(rowIndex,1,new QStandardItem(memberRow[2]));
 					addMemberModel->setItem(rowIndex,2,new QStandardItem(memberRow[3]));
+					addMemberModel->setItem(rowIndex,4,new QStandardItem(memberRow[0]));
+
+					QPushButton *deleteButton = new QPushButton(ui.addMemberTable);
+					QPixmap pixmap1("Resources/Delete_icon.png");
+					QIcon ButtonIcon1(pixmap1);
+					deleteButton->setIcon(ButtonIcon1);
+					QSignalMapper *signalMapper = new QSignalMapper(ui.addMemberTable);
+					signalMapper->setMapping(deleteButton,memberRow[0]);
+					QObject::connect(deleteButton,SIGNAL(clicked()),signalMapper,SLOT(map()));
+					QObject::connect(signalMapper,SIGNAL(mapped(QString)),this,SLOT(delMemberRowAction(QString)));
+					ui.addMemberTable->setIndexWidget(addMemberModel->index(rowIndex,3),deleteButton);
 
 					rowIndex++;
 				}
-				int numRow = addMemberModel->rowCount();
-				for(int i=rowIndex;i<numRow;i++)
-					addMemberModel->removeRow(i);
 
 				// course of class
 				MYSQL_ROW courseRow = database::course_searchId(conn,classRow[2]);
@@ -172,6 +180,23 @@ public:
 			}
 		}
 	}
+	
+	void addDeleteButtonToMemberList() // edit mode of class // after load list info --> add button after that
+	{
+		int numRow    = addMemberModel->rowCount();
+		int numColumn = addMemberModel->columnCount();
+		for(int i=0;i<numRow;i++)
+		{
+			QString memName  = addMemberModel->data(addMemberModel->index(i,0),Qt::DisplayRole).toString().trimmed();
+			QString memBirth = addMemberModel->data(addMemberModel->index(i,1),Qt::DisplayRole).toString().trimmed();
+			QString memOther = addMemberModel->data(addMemberModel->index(i,2),Qt::DisplayRole).toString().trimmed();
+			if(memName.length() > 0)
+			{
+				// NONONO
+			}
+		}
+	}	
+
 	void addUseRadioButton(QString courseNameEdit,QString courseNameChoose)  // use for choose another course in edit class
 	{
 		if(courseNameEdit.trimmed()==courseNameChoose.trimmed())
@@ -691,6 +716,12 @@ public:
 		QList<QString> headerList;
 		headerList << "Course Name" << "Skill" << "Material" << "Edit" << "Delete";
 		setHeaderTable(listCourseModel, headerList);
+
+		ui.listCourseTable->setColumnWidth(0,170);
+		ui.listCourseTable->setColumnWidth(1,220);
+		ui.listCourseTable->setColumnWidth(2,80);
+		ui.listCourseTable->setColumnWidth(3,80);
+		ui.listCourseTable->setColumnWidth(4,80);
 	
 		MYSQL_RES* res_set = database::course_getAll(conn);
 		fillListCourse(res_set,ui.listCourseTable,listCourseModel,0);
@@ -861,7 +892,9 @@ private:
 				else // edit
 				{
 					int a =0;
+
 					
+
 				}
 				classID =0;
 				ui.mainTab->setTabEnabled(0,true);
@@ -1228,16 +1261,26 @@ private:
 		{
 			loadListClassTab();
 		}
-		void editMemberAction()
-		{
-			listMemberDialog *dialog = new listMemberDialog(this,QString::number(classID));
-			dialog->exec();
-		}
+
 		void detailMemberAction(QString classId)
 		{
 			listMemberDialog *dialog = new listMemberDialog(this,classId);
 			dialog->exec();
 		}
+		void delMemberRowAction(QString memberId) //Edit class - member 
+		{
+			int numRow = addMemberModel->rowCount();
+			for(int i=0;i<numRow;i++)
+			{
+				QString memberGet = addMemberModel->data(addMemberModel->index(i,4),Qt::DisplayRole).toString().trimmed();
+				if(memberGet==memberId)
+				{
+					addMemberModel->removeRow(i);
+					return;
+				}
+			}
+		}
+
 		void editClassAction(QString classId)
 		{
 			classID = classId.toInt();

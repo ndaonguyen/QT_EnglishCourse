@@ -632,6 +632,7 @@ public:
 		}
 		return NULL;
 	}
+	
 	static int member_editById(MYSQL *connect, QString memberId, QList<QString> memberInfo)
 	{
 		QString query = "UPDATE `english_course`.`member` SET `name` = '"+memberInfo.at(0)+"', `birth_year` = '"+memberInfo.at(1)+"', `note` = '"+memberInfo.at(2)+"' "+" WHERE `id` =" + memberId;
