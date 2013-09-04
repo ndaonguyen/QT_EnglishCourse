@@ -12,7 +12,7 @@ MyClass::MyClass(QWidget *parent, Qt::WFlags flags)
 	conn = database::connectByC();
 	loadListCourseTab();
 	
-	
+	loadOriginConfig();
 	loadConfigClass();
 	loadDataAddClassTab(0);
 	loadListClassTab();

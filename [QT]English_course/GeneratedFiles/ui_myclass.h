@@ -26,6 +26,7 @@
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QPushButton>
+#include <QtGui/QSpinBox>
 #include <QtGui/QTabWidget>
 #include <QtGui/QTableView>
 #include <QtGui/QToolBar>
@@ -51,6 +52,7 @@ public:
     QLineEdit *searchClassLineEdit;
     QTableView *listClassTable;
     QPushButton *refreshClassButton;
+    QPushButton *addMoreClassButton;
     QWidget *addClassTab;
     QFrame *line;
     QLabel *classNameLabel;
@@ -72,11 +74,16 @@ public:
     QLabel *otherLabel;
     QLineEdit *otherLineEdit;
     QPushButton *cancelButton;
+    QPushButton *editMemberButton;
+    QWidget *dayUseWidget;
+    QLabel *dayUseLabel;
+    QSpinBox *dayUseSpinBox;
     QWidget *listCourseTab;
     QTableView *listCourseTable;
     QLineEdit *searchCourseLineEdit;
     QPushButton *searchCourseButton;
     QPushButton *refreshCourseButton;
+    QPushButton *addMoreCourseButton;
     QWidget *addCourseTab;
     QGroupBox *classInsertGroupBox;
     QWidget *horizontalLayoutWidget;
@@ -85,6 +92,7 @@ public:
     QWidget *step2WidgetInfo;
     QWidget *verticalLayoutWidget_2;
     QVBoxLayout *step2Layout;
+    QPushButton *cancelCourseButton;
     QPushButton *saveCourseButton;
     QWidget *step1Widget;
     QLabel *step1Label;
@@ -159,20 +167,27 @@ public:
         listClassTab->setObjectName(QString::fromUtf8("listClassTab"));
         searchButton = new QPushButton(listClassTab);
         searchButton->setObjectName(QString::fromUtf8("searchButton"));
-        searchButton->setGeometry(QRect(240, 10, 51, 23));
+        searchButton->setGeometry(QRect(230, 10, 71, 23));
         searchClassLineEdit = new QLineEdit(listClassTab);
         searchClassLineEdit->setObjectName(QString::fromUtf8("searchClassLineEdit"));
-        searchClassLineEdit->setGeometry(QRect(20, 10, 211, 20));
+        searchClassLineEdit->setGeometry(QRect(20, 10, 201, 20));
         listClassTable = new QTableView(listClassTab);
         listClassTable->setObjectName(QString::fromUtf8("listClassTable"));
         listClassTable->setGeometry(QRect(20, 50, 791, 541));
         refreshClassButton = new QPushButton(listClassTab);
         refreshClassButton->setObjectName(QString::fromUtf8("refreshClassButton"));
-        refreshClassButton->setGeometry(QRect(820, 0, 61, 51));
+        refreshClassButton->setGeometry(QRect(760, 0, 51, 41));
         QIcon icon5;
         icon5.addFile(QString::fromUtf8(":/MyClass/Resources/refresh_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
         refreshClassButton->setIcon(icon5);
-        refreshClassButton->setIconSize(QSize(40, 40));
+        refreshClassButton->setIconSize(QSize(35, 35));
+        addMoreClassButton = new QPushButton(listClassTab);
+        addMoreClassButton->setObjectName(QString::fromUtf8("addMoreClassButton"));
+        addMoreClassButton->setGeometry(QRect(820, 0, 51, 41));
+        QIcon icon6;
+        icon6.addFile(QString::fromUtf8(":/MyClass/Resources/addIcon.jpg"), QSize(), QIcon::Normal, QIcon::Off);
+        addMoreClassButton->setIcon(icon6);
+        addMoreClassButton->setIconSize(QSize(32, 32));
         mainTab->addTab(listClassTab, QString());
         addClassTab = new QWidget();
         addClassTab->setObjectName(QString::fromUtf8("addClassTab"));
@@ -195,7 +210,7 @@ public:
         totalDayLabel->setGeometry(QRect(20, 120, 91, 16));
         totalDateLineEdit = new QLineEdit(addClassTab);
         totalDateLineEdit->setObjectName(QString::fromUtf8("totalDateLineEdit"));
-        totalDateLineEdit->setGeometry(QRect(110, 120, 291, 20));
+        totalDateLineEdit->setGeometry(QRect(110, 120, 71, 20));
         memberLabel = new QLabel(addClassTab);
         memberLabel->setObjectName(QString::fromUtf8("memberLabel"));
         memberLabel->setGeometry(QRect(20, 160, 91, 16));
@@ -231,7 +246,7 @@ public:
         saveButton_2->setIcon(icon4);
         addMemberTable = new QTableView(addClassTab);
         addMemberTable->setObjectName(QString::fromUtf8("addMemberTable"));
-        addMemberTable->setGeometry(QRect(110, 160, 301, 251));
+        addMemberTable->setGeometry(QRect(110, 160, 301, 221));
         otherLabel = new QLabel(addClassTab);
         otherLabel->setObjectName(QString::fromUtf8("otherLabel"));
         otherLabel->setGeometry(QRect(20, 430, 91, 16));
@@ -241,15 +256,27 @@ public:
         cancelButton = new QPushButton(addClassTab);
         cancelButton->setObjectName(QString::fromUtf8("cancelButton"));
         cancelButton->setGeometry(QRect(490, 552, 221, 31));
-        QIcon icon6;
-        icon6.addFile(QString::fromUtf8(":/MyClass/Resources/cancel_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
-        cancelButton->setIcon(icon6);
+        QIcon icon7;
+        icon7.addFile(QString::fromUtf8(":/MyClass/Resources/cancel_icon.png"), QSize(), QIcon::Normal, QIcon::Off);
+        cancelButton->setIcon(icon7);
+        editMemberButton = new QPushButton(addClassTab);
+        editMemberButton->setObjectName(QString::fromUtf8("editMemberButton"));
+        editMemberButton->setGeometry(QRect(110, 380, 75, 23));
+        dayUseWidget = new QWidget(addClassTab);
+        dayUseWidget->setObjectName(QString::fromUtf8("dayUseWidget"));
+        dayUseWidget->setGeometry(QRect(240, 110, 181, 41));
+        dayUseLabel = new QLabel(dayUseWidget);
+        dayUseLabel->setObjectName(QString::fromUtf8("dayUseLabel"));
+        dayUseLabel->setGeometry(QRect(20, 10, 61, 16));
+        dayUseSpinBox = new QSpinBox(dayUseWidget);
+        dayUseSpinBox->setObjectName(QString::fromUtf8("dayUseSpinBox"));
+        dayUseSpinBox->setGeometry(QRect(100, 10, 71, 22));
         mainTab->addTab(addClassTab, QString());
         listCourseTab = new QWidget();
         listCourseTab->setObjectName(QString::fromUtf8("listCourseTab"));
         listCourseTable = new QTableView(listCourseTab);
         listCourseTable->setObjectName(QString::fromUtf8("listCourseTable"));
-        listCourseTable->setGeometry(QRect(10, 50, 671, 541));
+        listCourseTable->setGeometry(QRect(10, 50, 801, 541));
         searchCourseLineEdit = new QLineEdit(listCourseTab);
         searchCourseLineEdit->setObjectName(QString::fromUtf8("searchCourseLineEdit"));
         searchCourseLineEdit->setGeometry(QRect(10, 10, 201, 21));
@@ -258,9 +285,14 @@ public:
         searchCourseButton->setGeometry(QRect(220, 10, 75, 23));
         refreshCourseButton = new QPushButton(listCourseTab);
         refreshCourseButton->setObjectName(QString::fromUtf8("refreshCourseButton"));
-        refreshCourseButton->setGeometry(QRect(690, 0, 61, 51));
+        refreshCourseButton->setGeometry(QRect(760, 0, 51, 41));
         refreshCourseButton->setIcon(icon5);
-        refreshCourseButton->setIconSize(QSize(40, 40));
+        refreshCourseButton->setIconSize(QSize(35, 35));
+        addMoreCourseButton = new QPushButton(listCourseTab);
+        addMoreCourseButton->setObjectName(QString::fromUtf8("addMoreCourseButton"));
+        addMoreCourseButton->setGeometry(QRect(820, 0, 51, 41));
+        addMoreCourseButton->setIcon(icon6);
+        addMoreCourseButton->setIconSize(QSize(32, 32));
         mainTab->addTab(listCourseTab, QString());
         addCourseTab = new QWidget();
         addCourseTab->setObjectName(QString::fromUtf8("addCourseTab"));
@@ -289,9 +321,13 @@ public:
         step2Layout->setContentsMargins(11, 11, 11, 11);
         step2Layout->setObjectName(QString::fromUtf8("step2Layout"));
         step2Layout->setContentsMargins(0, 0, 0, 0);
+        cancelCourseButton = new QPushButton(classInsertGroupBox);
+        cancelCourseButton->setObjectName(QString::fromUtf8("cancelCourseButton"));
+        cancelCourseButton->setGeometry(QRect(190, 550, 131, 23));
+        cancelCourseButton->setIcon(icon7);
         saveCourseButton = new QPushButton(classInsertGroupBox);
         saveCourseButton->setObjectName(QString::fromUtf8("saveCourseButton"));
-        saveCourseButton->setGeometry(QRect(120, 550, 141, 23));
+        saveCourseButton->setGeometry(QRect(20, 550, 141, 23));
         saveCourseButton->setAutoFillBackground(true);
         step1Widget = new QWidget(addCourseTab);
         step1Widget->setObjectName(QString::fromUtf8("step1Widget"));
@@ -308,9 +344,9 @@ public:
         saveButton = new QPushButton(step1Widget);
         saveButton->setObjectName(QString::fromUtf8("saveButton"));
         saveButton->setGeometry(QRect(340, 0, 41, 31));
-        QIcon icon7;
-        icon7.addFile(QString::fromUtf8(":/MyClass/Resources/saveButtton.jpg"), QSize(), QIcon::Normal, QIcon::Off);
-        saveButton->setIcon(icon7);
+        QIcon icon8;
+        icon8.addFile(QString::fromUtf8(":/MyClass/Resources/saveButtton.jpg"), QSize(), QIcon::Normal, QIcon::Off);
+        saveButton->setIcon(icon8);
         saveButton->setIconSize(QSize(18, 18));
         step2Widget = new QWidget(addCourseTab);
         step2Widget->setObjectName(QString::fromUtf8("step2Widget"));
@@ -339,14 +375,14 @@ public:
         saveButton2 = new QPushButton(step2Widget);
         saveButton2->setObjectName(QString::fromUtf8("saveButton2"));
         saveButton2->setGeometry(QRect(340, 0, 41, 31));
-        saveButton2->setIcon(icon7);
+        saveButton2->setIcon(icon8);
         saveButton2->setIconSize(QSize(18, 18));
         addSkill = new QPushButton(step2Widget);
         addSkill->setObjectName(QString::fromUtf8("addSkill"));
         addSkill->setGeometry(QRect(260, 0, 75, 31));
-        QIcon icon8;
-        icon8.addFile(QString::fromUtf8(":/MyClass/Resources/add-icon.png"), QSize(), QIcon::Normal, QIcon::Off);
-        addSkill->setIcon(icon8);
+        QIcon icon9;
+        icon9.addFile(QString::fromUtf8(":/MyClass/Resources/add-icon.png"), QSize(), QIcon::Normal, QIcon::Off);
+        addSkill->setIcon(icon9);
         addSkill->setIconSize(QSize(18, 18));
         label = new QLabel(step2Widget);
         label->setObjectName(QString::fromUtf8("label"));
@@ -387,9 +423,7 @@ public:
         addMoreButton = new QPushButton(addCourseTab);
         addMoreButton->setObjectName(QString::fromUtf8("addMoreButton"));
         addMoreButton->setGeometry(QRect(10, 120, 71, 71));
-        QIcon icon9;
-        icon9.addFile(QString::fromUtf8(":/MyClass/Resources/addIcon.jpg"), QSize(), QIcon::Normal, QIcon::Off);
-        addMoreButton->setIcon(icon9);
+        addMoreButton->setIcon(icon6);
         addMoreButton->setIconSize(QSize(60, 60));
         mainTab->addTab(addCourseTab, QString());
         MyClassClass->setCentralWidget(centralWidget);
@@ -434,8 +468,12 @@ public:
         QObject::connect(classComboBox, SIGNAL(activated(QString)), MyClassClass, SLOT(courseComboAction(QString)));
         QObject::connect(cancelButton, SIGNAL(clicked()), MyClassClass, SLOT(cancelClassAction()));
         QObject::connect(refreshClassButton, SIGNAL(clicked()), MyClassClass, SLOT(refreshClassListAction()));
+        QObject::connect(editMemberButton, SIGNAL(clicked()), MyClassClass, SLOT(editMemberAction()));
+        QObject::connect(addMoreCourseButton, SIGNAL(clicked()), MyClassClass, SLOT(refreshAddCourseAction()));
+        QObject::connect(addMoreClassButton, SIGNAL(clicked()), MyClassClass, SLOT(refreshAddClassAction()));
+        QObject::connect(cancelCourseButton, SIGNAL(clicked()), MyClassClass, SLOT(cancelCourseAction()));
 
-        mainTab->setCurrentIndex(0);
+        mainTab->setCurrentIndex(3);
 
 
         QMetaObject::connectSlotsByName(MyClassClass);
@@ -476,6 +514,8 @@ public:
         saveButton_2->setText(QApplication::translate("MyClassClass", "SAVE", 0, QApplication::UnicodeUTF8));
         otherLabel->setText(QApplication::translate("MyClassClass", "Others", 0, QApplication::UnicodeUTF8));
         cancelButton->setText(QApplication::translate("MyClassClass", "CANCEL", 0, QApplication::UnicodeUTF8));
+        editMemberButton->setText(QApplication::translate("MyClassClass", "Edit members", 0, QApplication::UnicodeUTF8));
+        dayUseLabel->setText(QApplication::translate("MyClassClass", "Day use", 0, QApplication::UnicodeUTF8));
         mainTab->setTabText(mainTab->indexOf(addClassTab), QApplication::translate("MyClassClass", "Add class", 0, QApplication::UnicodeUTF8));
         searchCourseButton->setText(QApplication::translate("MyClassClass", "Search", 0, QApplication::UnicodeUTF8));
         refreshCourseButton->setText(QString());
@@ -485,6 +525,7 @@ public:
 #endif // QT_NO_TOOLTIP
         classInsertGroupBox->setTitle(QApplication::translate("MyClassClass", "Info inserted :", 0, QApplication::UnicodeUTF8));
         skillLabelShow->setText(QApplication::translate("MyClassClass", "<html><head/><body><p><span style=\" font-weight:600;\">Skills:</span></p></body></html>", 0, QApplication::UnicodeUTF8));
+        cancelCourseButton->setText(QApplication::translate("MyClassClass", "Cancel", 0, QApplication::UnicodeUTF8));
         saveCourseButton->setText(QApplication::translate("MyClassClass", "FINISH,  BACK  TO LIST !!!", 0, QApplication::UnicodeUTF8));
         step1Label->setText(QApplication::translate("MyClassClass", "<html><head/><body><p><span style=\" font-weight:600;\">Step 1 :Course name (e.g: Ielts, Toefl,...)</span></p></body></html>", 0, QApplication::UnicodeUTF8));
         setCourseLabel->setText(QApplication::translate("MyClassClass", "Set course name:", 0, QApplication::UnicodeUTF8));

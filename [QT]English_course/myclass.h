@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QListWidgetItem>
 #include <QInputDialog>
+#include <QRadioButton>
 #include "listMaterialDialog.h"
 #include "listCourseDialog.h"
 #include "listMemberDialog.h"
@@ -27,9 +28,10 @@ private:
 // CLASS info
 	QStandardItemModel *listClassModel;
 	QStandardItemModel *addMemberModel;
-	QList<QStandardItemModel*> skillModelList; // list contain material ( set current situation)
-	QList<QTableView*>  skillTableList; // list contain material 
-	QList<QString> skillIdList;
+	QList<QStandardItemModel*> skillModelList; // list contain material ( set current situation) // ADD CLASS
+	QList<QTableView*>  skillTableList; // list contain material   // ADD CLASS
+	QList<QString> skillIdList;     // skill of contain material   // ADD CLASS
+	int classID; // != 0 : edit mode . =0: save
 public:
 	/**
 	  * set Header for QTableView
@@ -80,6 +82,10 @@ public:
 		
 		listClassModel = new QStandardItemModel(this); 
 		ui.listClassTable->setModel(listClassModel);
+
+		classID =0;
+		ui.editMemberButton->setVisible(false);
+		ui.dayUseWidget->setVisible(false);
 	}
 	/**
 	  * Load data to Add Class tab with two method (create, edit) : base on ClassId 
@@ -89,6 +95,12 @@ public:
 	{
 		if(classId ==0)
 		{
+			skillModelList.clear();
+			skillTableList.clear();
+			skillIdList.clear();
+
+			ui.editMemberButton->setVisible(false);
+			ui.dayUseWidget->setVisible(false);
 			ui.courseInfoLabel->setText("");
 			ui.classNameLineEdit->setText("");
 			ui.totalDateLineEdit->setText("");
@@ -115,6 +127,75 @@ public:
 			while(MYSQL_ROW row = mysql_fetch_row(res))
 				ui.classComboBox->addItem(row[1]);
 			ui.classComboBox->setCurrentIndex(0);
+		}
+		else
+		{
+			QString classIdStr = QString::number(classId);
+
+			ui.editMemberButton->setVisible(true);
+			ui.dayUseWidget->setVisible(true);
+			
+			MYSQL_ROW classRow = database::class_searchClassId(conn,classIdStr);
+			if(classRow)
+			{
+				ui.classNameLineEdit->setText(classRow[1]);
+				
+				QString classDate = classRow[3];
+				QStringList dateList = classDate.split("-");
+				QDate dateIn;
+				dateIn.setDate(dateList.at(0).toInt(),dateList.at(1).toInt(),dateList.at(2).toInt());
+				ui.regisdateEdit->setDate(dateIn);
+
+				ui.totalDateLineEdit->setText(classRow[4]);
+				ui.otherLineEdit->setText(classRow[6]);
+				
+				MYSQL_RES *resClassMember = database::classMember_searchClassId(conn, classIdStr); // member
+				int rowIndex=0;
+				while(MYSQL_ROW classMemberRow = mysql_fetch_row(resClassMember))
+				{
+					MYSQL_ROW memberRow = database::member_searchMemberId(conn,classMemberRow[1]);
+					addMemberModel->setItem(rowIndex,0,new QStandardItem(memberRow[1]));
+					addMemberModel->setItem(rowIndex,1,new QStandardItem(memberRow[2]));
+					addMemberModel->setItem(rowIndex,2,new QStandardItem(memberRow[3]));
+
+					rowIndex++;
+				}
+				int numRow = addMemberModel->rowCount();
+				for(int i=rowIndex;i<numRow;i++)
+					addMemberModel->removeRow(i);
+
+				// course of class
+				MYSQL_ROW courseRow = database::course_searchId(conn,classRow[2]);
+				ui.courseClassLabel->setText(courseRow[1]);
+				courseComboAction(courseRow[1]); // load material of skills
+				// add stick to material ( used or not)
+				int numList = skillModelList.count();
+				for(int i=0;i<numList;i++)    // each table skill
+				{
+					QStandardItemModel *model = skillModelList.at(i);
+					QString skillId           = skillIdList.at(i);
+					QTableView *tableView     = skillTableList.at(i);
+					model->setHorizontalHeaderItem(3, new QStandardItem("Use?"));
+					int numColumn = model->columnCount();
+					int numRow    = model->rowCount();
+					for(int r =0;r<numRow;r++)
+					{
+						//materialUse_searchByClassIdNSkillId
+						QString materialId  = model->data(model->index(r,0),Qt::DisplayRole).toString();
+						MYSQL_ROW row       = database::materialUse_searchMaterialId(conn,materialId);
+						QRadioButton *radio = new QRadioButton("Used");
+						QString status      = row[3];
+						if(status=="0")
+							radio->setChecked(false);
+						else
+							radio->setChecked(true);
+
+						tableView->setIndexWidget(model->index(r,3),radio);
+						
+					}
+
+				}
+			}
 		}
 	}
 	/**
@@ -161,7 +242,7 @@ public:
 				rowIndex++;
 			}
 			skillTable->setColumnWidth(0,50);
-			skillTable->setColumnWidth(1,250);
+			skillTable->setColumnWidth(1,200);
 			skillTable->setColumnWidth(2,50);
 
 			skillIdList.append(skillRow[0]);
@@ -606,7 +687,14 @@ public:
 		MYSQL_RES* res_set = database::course_getAll(conn);
 		fillListCourse(res_set,ui.listCourseTable,listCourseModel,0);
 	}
-
+	// COMMON
+	void loadOriginConfig()
+	{
+		ui.mainTab->setTabEnabled(0,true);
+		ui.mainTab->setTabEnabled(1,false);
+		ui.mainTab->setTabEnabled(2,true);
+		ui.mainTab->setTabEnabled(3,false);
+	}
 public:
 	MyClass(QWidget *parent = 0, Qt::WFlags flags = 0);
 	~MyClass();
@@ -615,9 +703,29 @@ private:
 	Ui::MyClassClass ui;
 // START : ADD CLASS TAB
 	private slots:
+		void refreshAddClassAction()
+		{
+			loadDataAddClassTab(0);
+			QWidget * tab = ui.mainTab->widget(1);
+			ui.mainTab->setCurrentWidget(tab);
+			classID =0;
+
+			ui.mainTab->setTabEnabled(0,false);
+			ui.mainTab->setTabEnabled(1,true);
+			ui.mainTab->setTabEnabled(2,false);
+			ui.mainTab->setTabEnabled(3,false);
+		}
 		void cancelClassAction()
 		{
 			loadDataAddClassTab(0);
+			QWidget * tab = ui.mainTab->widget(0);
+			ui.mainTab->setCurrentWidget(tab);
+			classID =0;
+
+			ui.mainTab->setTabEnabled(0,true);
+			ui.mainTab->setTabEnabled(1,false);
+			ui.mainTab->setTabEnabled(2,true);
+			ui.mainTab->setTabEnabled(3,false);
 		}
 			
 		/**
@@ -644,7 +752,6 @@ private:
 				}
 			}
 		}
-
 		/**
 		  * Check data before saving
 		  */
@@ -697,49 +804,61 @@ private:
 				}	
 
 				// SAVE
-				QList<QString> classListInfo;
-				classListInfo << ui.classNameLineEdit->text() << ui.regisdateEdit->date().toString("yyyy-MM-dd") <<ui.totalDateLineEdit->text() << ui.otherLineEdit->text();
-				int classId = database::class_saveAction(conn,classListInfo);
-				if(classId !=-1)
+				if (classID ==0)
 				{
-					//save members
-					for(int i = 0;i<numMember;i++)
+					QList<QString> classListInfo;
+					classListInfo << ui.classNameLineEdit->text() << ui.regisdateEdit->date().toString("yyyy-MM-dd") <<ui.totalDateLineEdit->text() << ui.otherLineEdit->text();
+					int classId = database::class_saveAction(conn,classListInfo);
+					if(classId !=-1)
 					{
-						QString memberName = memberList.at(i);
-						if(memberName != "")
+						//save members
+						for(int i = 0;i<numMember;i++)
 						{
-							QString birthYear = addMemberModel->data(addMemberModel->index(i,1),Qt::DisplayRole).toString().trimmed();
-							QString note      = addMemberModel->data(addMemberModel->index(i,2),Qt::DisplayRole).toString().trimmed();
-							QList<QString> memberListInfo;
-							memberListInfo << memberName << birthYear << note;
-							int memberId = database::member_saveAction(conn,memberListInfo);
-							if(memberId != -1)
-								database::classMember_saveAction(conn,QString::number(classId),QString::number(memberId));
+							QString memberName = memberList.at(i);
+							if(memberName != "")
+							{
+								QString birthYear = addMemberModel->data(addMemberModel->index(i,1),Qt::DisplayRole).toString().trimmed();
+								QString note      = addMemberModel->data(addMemberModel->index(i,2),Qt::DisplayRole).toString().trimmed();
+								QList<QString> memberListInfo;
+								memberListInfo << memberName << birthYear << note;
+								int memberId = database::member_saveAction(conn,memberListInfo);
+								if(memberId != -1)
+									database::classMember_saveAction(conn,QString::number(classId),QString::number(memberId));
+							}
 						}
-					}
-					//edit course_id to class table
-					QString courseName  = ui.courseClassLabel->text();
-					MYSQL_ROW courseRow = database::course_searchName(conn,courseName);
-					database::class_editCourseIdById(conn,QString::number(classId),courseRow[0]);
+						//edit course_id to class table
+						QString courseName  = ui.courseClassLabel->text();
+						MYSQL_ROW courseRow = database::course_searchName(conn,courseName);
+						database::class_editCourseIdById(conn,QString::number(classId),courseRow[0]);
 
-					//save material
-					int skillNum = skillModelList.count();
-					for(int i =0;i<skillNum;i++)
-					{
-					//	QList<QStandardItemModel*> skillModelList;
-						QStandardItemModel *skillModel = skillModelList.at(i);
-						int materialRow                = skillModel->rowCount();
-						for(int j=0;j<materialRow;j++)
+						//save material
+						int skillNum = skillModelList.count();
+						for(int i =0;i<skillNum;i++)
 						{
-							QString materialId = skillModel->data(skillModel->index(j,0),Qt::DisplayRole).toString().trimmed();
-							database::materialUse_saveAction(conn,materialId,QString::number(classId),skillIdList.at(i));
+						//	QList<QStandardItemModel*> skillModelList;
+							QStandardItemModel *skillModel = skillModelList.at(i);
+							int materialRow                = skillModel->rowCount();
+							for(int j=0;j<materialRow;j++)
+							{
+								QString materialId = skillModel->data(skillModel->index(j,0),Qt::DisplayRole).toString().trimmed();
+								database::materialUse_saveAction(conn,materialId,QString::number(classId),skillIdList.at(i));
+							}
 						}
 					}
+					loadDataAddClassTab(0);
+					loadListClassTab();
+					QWidget * tab = ui.mainTab->widget(0);
+					ui.mainTab->setCurrentWidget(tab);
 				}
-				loadDataAddClassTab(0);
-				loadListClassTab();
-				QWidget * tab = ui.mainTab->widget(0);
-				ui.mainTab->setCurrentWidget(tab);
+				else // edit
+				{
+					int a =0;
+					
+				}
+				classID =0;
+				ui.mainTab->setTabEnabled(0,true);
+				ui.mainTab->setTabEnabled(2,true);
+				ui.mainTab->setTabEnabled(3,true);
 			}
 		}
 
@@ -770,6 +889,14 @@ private:
 		// START refresh (add more action)
 		void refreshAddCourseAction()
 		{
+			ui.mainTab->setTabEnabled(0,false);
+			ui.mainTab->setTabEnabled(1,false);
+			ui.mainTab->setTabEnabled(2,false);
+			ui.mainTab->setTabEnabled(3,true);
+
+			QWidget * tab = ui.mainTab->widget(3);
+			ui.mainTab->setCurrentWidget(tab);
+
 			refreshToOrigin();
 		}
 		// END refresh (add more action)
@@ -941,8 +1068,9 @@ private:
 			// load course list
 			loadListCourseTab();
 			ui.mainTab->setTabEnabled(0,true);
-			ui.mainTab->setTabEnabled(1,true);
+			ui.mainTab->setTabEnabled(1,false);
 			ui.mainTab->setTabEnabled(2,true);
+			ui.mainTab->setTabEnabled(3,false);
 		}
 	private slots:
 		// share action
@@ -974,6 +1102,19 @@ private:
 		}
 // LIST COURSE TAB
 	private slots:
+		void cancelCourseAction()
+		{
+			ui.mainTab->setTabEnabled(0,true);
+			ui.mainTab->setTabEnabled(1,false);
+			ui.mainTab->setTabEnabled(2,true);
+			ui.mainTab->setTabEnabled(3,false);
+
+			QWidget * tab = ui.mainTab->widget(2);
+			ui.mainTab->setCurrentWidget(tab);
+
+			refreshToOrigin();
+		}
+
 		void searchCourseAction()
 		{
 			QString textSearchTemp = ui.searchCourseLineEdit->text();
@@ -1000,6 +1141,11 @@ private:
 		}
 		void editCourseAction(QString courseId)
 		{
+			ui.mainTab->setTabEnabled(0,false);
+			ui.mainTab->setTabEnabled(1,false);
+			ui.mainTab->setTabEnabled(2,false);
+			ui.mainTab->setTabEnabled(3,true);
+
 			// Edit info
 			// --> Must asign value to CourseId and CourseName --> for value in clicked() signal()
 			MYSQL_ROW courseRow = database::course_searchId(conn,courseId);
@@ -1065,15 +1211,26 @@ private:
 		{
 			loadListClassTab();
 		}
+		void editMemberAction()
+		{
+			listMemberDialog *dialog = new listMemberDialog(this,QString::number(classID));
+			dialog->exec();
+		}
 		void detailMemberAction(QString classId)
 		{
-			int a = 0;
 			listMemberDialog *dialog = new listMemberDialog(this,classId);
 			dialog->exec();
 		}
 		void editClassAction(QString classId)
 		{
-			int a = 0;
+			classID = classId.toInt();
+			loadDataAddClassTab(classID);
+			ui.mainTab->setTabEnabled(0,false);
+			ui.mainTab->setTabEnabled(1,true);
+			ui.mainTab->setTabEnabled(2,false);
+			ui.mainTab->setTabEnabled(3,false);
+			QWidget * tab = ui.mainTab->widget(1);
+			ui.mainTab->setCurrentWidget(tab);
 		}
 		void deleteClassAction(QString classId)
 		{

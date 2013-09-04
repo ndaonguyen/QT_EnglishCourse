@@ -532,6 +532,22 @@ public:
 		}
 		return -1;
 	}
+	static MYSQL_ROW class_searchClassId(MYSQL *connect,QString classId)
+	{
+		MYSQL_RES *res_set;
+		MYSQL_ROW row;
+	
+		QString tem = "SELECT * FROM `english_course`.`class` WHERE `id` = '"+classId+"'";			
+		std::string temp1 = tem.toStdString();
+		const char* temp2 = temp1.c_str();
+		if(mysql_query(connect,temp2) ==0)
+		{
+			res_set = mysql_store_result(connect);
+			row = mysql_fetch_row(res_set);
+			return row;
+		}
+		return NULL;
+	}
 	static MYSQL_RES* class_getAll(MYSQL *connect)
 	{
 		QString query = "SELECT * FROM `english_course`.`class`";
@@ -701,6 +717,36 @@ public:
 			return courseSkill_getMaxSkillID(connect);
 		}
 		return -1;
+	}
+	static MYSQL_RES* materialUse_searchByClassIdNSkillId(MYSQL *connect, QString classId, QString skillId)
+	{
+		MYSQL_RES *res_set;
+		MYSQL_ROW row;
+	
+		QString tem = "SELECT * FROM `english_course`.`materialuse` WHERE class_id="+classId +" AND skill_id="+skillId ;		
+		std::string temp1 = tem.toStdString();
+		const char* temp2 = temp1.c_str();
+		if(mysql_query(connect,temp2) ==0)
+		{
+			res_set = mysql_store_result(connect);
+			return res_set;
+		}
+		return NULL;
+	}
+	static MYSQL_ROW materialUse_searchMaterialId(MYSQL *connect, QString materialId)
+	{
+		MYSQL_RES *res_set;
+		MYSQL_ROW row;
+		QString tem = "SELECT * FROM `english_course`.`materialuse` WHERE `material_id` = '"+materialId+"'";			
+		std::string temp1 = tem.toStdString();
+		const char* temp2 = temp1.c_str();
+		if(mysql_query(connect,temp2) ==0)
+		{
+			res_set = mysql_store_result(connect);
+			row = mysql_fetch_row(res_set);
+			return row;
+		}
+		return NULL;
 	}
 	static int materialUse_countByClassId(MYSQL *connect, QString classId)
 	{

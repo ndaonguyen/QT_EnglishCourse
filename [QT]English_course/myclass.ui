@@ -27,7 +27,7 @@
      <string/>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="listClassTab">
      <attribute name="title">
@@ -36,9 +36,9 @@
      <widget class="QPushButton" name="searchButton">
       <property name="geometry">
        <rect>
-        <x>240</x>
+        <x>230</x>
         <y>10</y>
-        <width>51</width>
+        <width>71</width>
         <height>23</height>
        </rect>
       </property>
@@ -51,7 +51,7 @@
        <rect>
         <x>20</x>
         <y>10</y>
-        <width>211</width>
+        <width>201</width>
         <height>20</height>
        </rect>
       </property>
@@ -69,10 +69,10 @@
      <widget class="QPushButton" name="refreshClassButton">
       <property name="geometry">
        <rect>
-        <x>820</x>
+        <x>760</x>
         <y>0</y>
-        <width>61</width>
-        <height>51</height>
+        <width>51</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="text">
@@ -84,8 +84,28 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>40</width>
-        <height>40</height>
+        <width>35</width>
+        <height>35</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="addMoreClassButton">
+      <property name="geometry">
+       <rect>
+        <x>820</x>
+        <y>0</y>
+        <width>51</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="icon">
+       <iconset resource="myclass.qrc">
+        <normaloff>:/MyClass/Resources/addIcon.jpg</normaloff>:/MyClass/Resources/addIcon.jpg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
        </size>
       </property>
      </widget>
@@ -161,7 +181,7 @@
        <rect>
         <x>110</x>
         <y>120</y>
-        <width>291</width>
+        <width>71</width>
         <height>20</height>
        </rect>
       </property>
@@ -282,7 +302,7 @@
         <x>110</x>
         <y>160</y>
         <width>301</width>
-        <height>251</height>
+        <height>221</height>
        </rect>
       </property>
      </widget>
@@ -326,6 +346,52 @@
         <normaloff>:/MyClass/Resources/cancel_icon.png</normaloff>:/MyClass/Resources/cancel_icon.png</iconset>
       </property>
      </widget>
+     <widget class="QPushButton" name="editMemberButton">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>380</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Edit members</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="dayUseWidget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>110</y>
+        <width>181</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <widget class="QLabel" name="dayUseLabel">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>10</y>
+         <width>61</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Day use</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="dayUseSpinBox">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>10</y>
+         <width>71</width>
+         <height>22</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
     </widget>
     <widget class="QWidget" name="listCourseTab">
      <attribute name="title">
@@ -336,7 +402,7 @@
        <rect>
         <x>10</x>
         <y>50</y>
-        <width>671</width>
+        <width>801</width>
         <height>541</height>
        </rect>
       </property>
@@ -367,10 +433,10 @@
      <widget class="QPushButton" name="refreshCourseButton">
       <property name="geometry">
        <rect>
-        <x>690</x>
+        <x>760</x>
         <y>0</y>
-        <width>61</width>
-        <height>51</height>
+        <width>51</width>
+        <height>41</height>
        </rect>
       </property>
       <property name="text">
@@ -382,8 +448,28 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>40</width>
-        <height>40</height>
+        <width>35</width>
+        <height>35</height>
+       </size>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="addMoreCourseButton">
+      <property name="geometry">
+       <rect>
+        <x>820</x>
+        <y>0</y>
+        <width>51</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="icon">
+       <iconset resource="myclass.qrc">
+        <normaloff>:/MyClass/Resources/addIcon.jpg</normaloff>:/MyClass/Resources/addIcon.jpg</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
        </size>
       </property>
      </widget>
@@ -452,10 +538,27 @@
         <layout class="QVBoxLayout" name="step2Layout"/>
        </widget>
       </widget>
+      <widget class="QPushButton" name="cancelCourseButton">
+       <property name="geometry">
+        <rect>
+         <x>190</x>
+         <y>550</y>
+         <width>131</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+       <property name="icon">
+        <iconset resource="myclass.qrc">
+         <normaloff>:/MyClass/Resources/cancel_icon.png</normaloff>:/MyClass/Resources/cancel_icon.png</iconset>
+       </property>
+      </widget>
       <widget class="QPushButton" name="saveCourseButton">
        <property name="geometry">
         <rect>
-         <x>120</x>
+         <x>20</x>
          <y>550</y>
          <width>141</width>
          <height>23</height>
@@ -1010,8 +1113,8 @@
      <y>279</y>
     </hint>
     <hint type="destinationlabel">
-     <x>170</x>
-     <y>676</y>
+     <x>275</x>
+     <y>751</y>
     </hint>
    </hints>
   </connection>
@@ -1026,8 +1129,8 @@
      <y>309</y>
     </hint>
     <hint type="destinationlabel">
-     <x>257</x>
-     <y>676</y>
+     <x>636</x>
+     <y>753</y>
     </hint>
    </hints>
   </connection>
@@ -1042,8 +1145,8 @@
      <y>339</y>
     </hint>
     <hint type="destinationlabel">
-     <x>200</x>
-     <y>676</y>
+     <x>256</x>
+     <y>701</y>
     </hint>
    </hints>
   </connection>
@@ -1058,8 +1161,8 @@
      <y>369</y>
     </hint>
     <hint type="destinationlabel">
-     <x>451</x>
-     <y>676</y>
+     <x>495</x>
+     <y>750</y>
     </hint>
    </hints>
   </connection>
@@ -1074,8 +1177,8 @@
      <y>367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>33</x>
-     <y>676</y>
+     <x>114</x>
+     <y>756</y>
     </hint>
    </hints>
   </connection>
@@ -1090,8 +1193,8 @@
      <y>367</y>
     </hint>
     <hint type="destinationlabel">
-     <x>51</x>
-     <y>676</y>
+     <x>97</x>
+     <y>703</y>
     </hint>
    </hints>
   </connection>
@@ -1106,8 +1209,8 @@
      <y>247</y>
     </hint>
     <hint type="destinationlabel">
-     <x>636</x>
-     <y>676</y>
+     <x>731</x>
+     <y>715</y>
     </hint>
    </hints>
   </connection>
@@ -1122,8 +1225,8 @@
      <y>258</y>
     </hint>
     <hint type="destinationlabel">
-     <x>349</x>
-     <y>690</y>
+     <x>344</x>
+     <y>725</y>
     </hint>
    </hints>
   </connection>
@@ -1134,7 +1237,7 @@
    <slot>refreshCourseListAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>756</x>
+     <x>826</x>
      <y>127</y>
     </hint>
     <hint type="destinationlabel">
@@ -1230,12 +1333,76 @@
    <slot>refreshClassListAction()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>864</x>
-     <y>130</y>
+     <x>804</x>
+     <y>127</y>
     </hint>
     <hint type="destinationlabel">
      <x>824</x>
      <y>703</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>editMemberButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>editMemberAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>477</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>34</x>
+     <y>720</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>addMoreCourseButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>refreshAddCourseAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>870</x>
+     <y>127</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>655</x>
+     <y>706</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>addMoreClassButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>refreshAddClassAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>865</x>
+     <y>120</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>646</x>
+     <y>718</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cancelCourseButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MyClassClass</receiver>
+   <slot>cancelCourseAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>824</x>
+     <y>661</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>853</x>
+     <y>728</y>
     </hint>
    </hints>
   </connection>
@@ -1263,5 +1430,8 @@
   <slot>courseComboAction(QString)</slot>
   <slot>cancelClassAction()</slot>
   <slot>refreshClassListAction()</slot>
+  <slot>editMemberAction()</slot>
+  <slot>refreshAddClassAction()</slot>
+  <slot>cancelCourseAction()</slot>
  </slots>
 </ui>
