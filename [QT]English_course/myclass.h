@@ -167,22 +167,31 @@ public:
 				// course of class
 				MYSQL_ROW courseRow = database::course_searchId(conn,classRow[2]);
 				ui.courseClassLabel->setText(courseRow[1]);
-				courseComboAction(courseRow[1]); // load material of skills
-				// add stick to material ( used or not)
-				int numList = skillModelList.count();
-				for(int i=0;i<numList;i++)    // each table skill
+				 // load material of skills + add radio button use/ not use
+				courseComboAction(courseRow[1]);
+			}
+		}
+	}
+	void addUseRadioButton(QString courseNameEdit,QString courseNameChoose)  // use for choose another course in edit class
+	{
+		if(courseNameEdit.trimmed()==courseNameChoose.trimmed())
+		{
+			int numList = skillModelList.count();
+			for(int i=0;i<numList;i++)    // each table skill
+			{
+				QStandardItemModel *model = skillModelList.at(i);
+				QString skillId           = skillIdList.at(i);
+				QTableView *tableView     = skillTableList.at(i);
+				model->setHorizontalHeaderItem(3, new QStandardItem("Use?"));
+				int numColumn = model->columnCount();
+				int numRow    = model->rowCount();
+				for(int r =0;r<numRow;r++)
 				{
-					QStandardItemModel *model = skillModelList.at(i);
-					QString skillId           = skillIdList.at(i);
-					QTableView *tableView     = skillTableList.at(i);
-					model->setHorizontalHeaderItem(3, new QStandardItem("Use?"));
-					int numColumn = model->columnCount();
-					int numRow    = model->rowCount();
-					for(int r =0;r<numRow;r++)
+					//materialUse_searchByClassIdNSkillId
+					QString materialId  = model->data(model->index(r,0),Qt::DisplayRole).toString();
+					MYSQL_ROW row       = database::materialUse_searchMaterialId(conn,materialId);
+					if(row)
 					{
-						//materialUse_searchByClassIdNSkillId
-						QString materialId  = model->data(model->index(r,0),Qt::DisplayRole).toString();
-						MYSQL_ROW row       = database::materialUse_searchMaterialId(conn,materialId);
 						QRadioButton *radio = new QRadioButton("Used");
 						QString status      = row[3];
 						if(status=="0")
@@ -191,13 +200,12 @@ public:
 							radio->setChecked(true);
 
 						tableView->setIndexWidget(model->index(r,3),radio);
-						
 					}
-
 				}
 			}
 		}
 	}
+
 	/**
 	  *	Fill Course info : able to delete material ( but not edit
 	  * @param courseIdStr : course_id --> to load data
@@ -869,17 +877,26 @@ private:
 				clearItemsLayout(ui.courseInfoLayout);
 				ui.courseInfoLabel->setText(tr(""));
 				ui.courseClassLabel->setText(tr(""));
-				skillModelList.clear();
-				skillTableList.clear();
-				skillIdList.clear();
+			
 				return;
 			}
+			skillModelList.clear();
+			skillTableList.clear();
+			skillIdList.clear();
+
 			ui.courseClassLabel->setText(courseStr);
 			clearItemsLayout(ui.courseInfoLayout);
 			MYSQL_ROW courseRow = database::course_searchName(conn,courseStr);
 			QString courseIdStr = courseRow[0];
 			fillMaterial4AddMember(courseIdStr);
 			ui.courseInfoLabel->setText("<b>Course "+courseStr+" info</b>");
+			if(classID!=0)
+			{
+				MYSQL_ROW classRow  = database::class_searchClassId(conn,QString::number(classID));
+				MYSQL_ROW courseRow = database::course_searchId(conn,classRow[2]);
+
+				addUseRadioButton(courseRow[1],courseStr);
+			}
 		}
 // END   : ADD CLASS TAB
 
@@ -1224,13 +1241,15 @@ private:
 		void editClassAction(QString classId)
 		{
 			classID = classId.toInt();
-			loadDataAddClassTab(classID);
+			
 			ui.mainTab->setTabEnabled(0,false);
 			ui.mainTab->setTabEnabled(1,true);
 			ui.mainTab->setTabEnabled(2,false);
 			ui.mainTab->setTabEnabled(3,false);
 			QWidget * tab = ui.mainTab->widget(1);
 			ui.mainTab->setCurrentWidget(tab);
+
+			loadDataAddClassTab(classID);
 		}
 		void deleteClassAction(QString classId)
 		{
